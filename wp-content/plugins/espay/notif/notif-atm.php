@@ -25,14 +25,56 @@ wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."'
 and 
 wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_currency','_order_total','_billing_first_name','_payment_method_title')
+wp_postmeta.meta_key in('_order_currency')
 ";
+$results = $wpdb->get_results( $sql); 
+
+$sql1 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_posts.post_password, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
+FROM wp_woocommerce_order_items
+JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
+JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+where 
+wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.meta_key in('_order_total')
+";
+$results1 = $wpdb->get_results( $sql1); 
+
+$sql2 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_posts.post_password, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
+FROM wp_woocommerce_order_items
+JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
+JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+where 
+wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.meta_key in('_billing_first_name')
+";
+$results2 = $wpdb->get_results( $sql2); 
+
+$sql3 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_posts.post_password, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
+FROM wp_woocommerce_order_items
+JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
+JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+where 
+wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+and 
+wp_postmeta.meta_key in('_payment_method_title')
+";
+$results3 = $wpdb->get_results( $sql3); 
+
 //and
 //wp_postmeta.meta_value = '".$amt."'
 //wp_postmeta.meta_key = '".$meta_key."'
 //wp_postmeta.meta_key in('_order_currency','_order_total')
+//wp_postmeta.meta_key in('_order_currency','_order_total','_billing_first_name','_payment_method_title')
 
-$results = $wpdb->get_results( $sql); 
+
 //echo'<pre>';
 //var_dump($results);
 //echo'</pre>';
@@ -57,9 +99,9 @@ if ( $myaccount_page_id ) {
 		   		$ccy = $results[0]->meta_value;
 		   }
 		   
-		   $fullname = $results[1]->meta_value;
-		   $paymentmethod = $results[2]->meta_value;
-		   $amount = $results[3]->meta_value;
+		   $fullname = $results2[0]->meta_value;
+		   $paymentmethod = $results3[0]->meta_value;
+		   $amount = $results1[0]->meta_value;
 ?>
 <?php if($order_id_ori && $post_status == 'wc-completed'){}
 elseif($order_id_ori && $post_status == 'wc-processing'){
@@ -86,12 +128,11 @@ else{
 					<div id="outPopUp">
 						  <div id="primary" class="site-content" style="align">
 							  <div class="entry-content">
-								  <B><H4><img src="success.png">  Hi <b><?=$fullname?>,</b> </H4> </B><hr>
+								  <B><H4><img src="success.png">  Hi...... </b> </H4> </B><hr>
 								  Order kamu telah kami terima! Kami harap kamu dapat menggunakan produk yang dipesan secepatnya dengan 
 								  melakukan pembayaran via <u><?=$paymentmethod;?></u>.
 								  <br><br>
 								  <a href='<?=$myaccount_page_url?>' title='selengkapnya'>Nomor Order/Id # Anda</a> : <font color="red"><?=$_REQUEST['order']?> </font><br>
-								  Jumlah uang yang ditagihkan : <font color="red"><?=$ccy?>. <?=number_format($amount, 2); ?> </font>
 								  <br><br>
 								  <form action="<?=$url?>" method="post">
 								  <input type='submit' value="Continue Shopping">
