@@ -1,5 +1,4 @@
 <?php
-
 /*
   Plugin Name: ESPay Payment Gateways
   Plugin URI: http://sgo.co.id
@@ -9,7 +8,8 @@
   Author URI: http://sgo.co.id
  */
 
-if ( ! defined( 'ABSPATH' ) ) exit; 
+if (!defined('ABSPATH'))
+    exit;
 
 add_action('plugins_loaded', 'woocommerce_espay_init', 0);
 
@@ -19,28 +19,28 @@ function woocommerce_espay_init() {
         return;
 
     class WC_Gateway_eSpay extends WC_Payment_Gateway {
-    	
+
         public function __construct() {
-            
+
             //plugin id
-              $this->id = 'espay';
+            $this->id = 'espay';
             //Payment Gateway title
             $this->method_title = 'ESPay Payment Gateways';
             //true only in case of direct payment method, false in our case
             $this->has_fields = false;
             //payment gateway logo
             $this->icon = plugins_url('/sgo1.png', __FILE__);
-            
+
             //redirect URL
-            $this->redirect_url = str_replace( 'https:', 'http:', add_query_arg( 'wc-api', 'WC_Gateway_eSpay', home_url( '/' ) ) );
-            
+            $this->redirect_url = str_replace('https:', 'http:', add_query_arg('wc-api', 'WC_Gateway_eSpay', home_url('/')));
+
             //Load settings
             $this->init_form_fields();
             $this->init_settings();
-            
+
             // Define user set variables
-            
-            $this->enabled      = $this->settings['enabled'];
+
+            $this->enabled = $this->settings['enabled'];
 //            
 //            $espayproductOri = WC()->session->get( 'espayproduct' ); 
 //			$espayproduct = stripslashes($espayproductOri);
@@ -48,21 +48,21 @@ function woocommerce_espay_init() {
 //        	
 //			$this->productNameP = $productName1 = ' - '.$valJsonPost1->productName;
 //			$this->title        = "ESPay Payment Gateways". $this->productNameP;
-			$this->title        = "ESPay Payment Gateways";
-			
-            $this->description  = $this->settings['description'];
-            $this->apikey       = $this->settings['apikey'];
-            $this->password     = $this->settings['password'];
+            $this->title = "ESPay Payment Gateways";
+
+            $this->description = $this->settings['description'];
+            $this->apikey = $this->settings['apikey'];
+            $this->password = $this->settings['password'];
             $this->processor_id = $this->settings['processor_id'];
-            $this->salemethod   = $this->settings['salemethod'];
-            $this->gatewayurl   = $this->settings['gatewayurl'];
+            $this->salemethod = $this->settings['salemethod'];
+            $this->gatewayurl = $this->settings['gatewayurl'];
             $this->order_prefix = $this->settings['order_prefix'];
-            $this->debugon      = $this->settings['debugon'];
-            $this->debugrecip   = $this->settings['debugrecip'];
-            $this->cvv          = $this->settings['cvv'];
+            $this->debugon = $this->settings['debugon'];
+            $this->debugrecip = $this->settings['debugrecip'];
+            $this->cvv = $this->settings['cvv'];
 //            $this->ipaddress          = $this->settings['ipaddress'];
-            $this->paymentpassword   = $this->settings['paymentpassword'];
-            $this->signatureKey   = $this->settings['signatureKey'];
+            $this->paymentpassword = $this->settings['paymentpassword'];
+            $this->signatureKey = $this->settings['signatureKey'];
             $this->environment = $this->settings['environment'];
             $this->min_order_total = $this->settings['min_order_total'];
             $this->max_order_total = $this->settings['max_order_total'];
@@ -86,24 +86,21 @@ function woocommerce_espay_init() {
             $this->fee_mayapada_ib = $this->settings['fee_mayapada_ib'];
             $this->fee_mualamatatm = $this->settings['fee_mualamatatm'];
             $this->fee_bitcoin = $this->settings['fee_bitcoin'];
-            
-            
-            
+
+
+
 //            $this->bankmayapada       = $this->get_option( 'bankmayapada' );
 //		    $this->bankdki       = $this->get_option( 'bankdki' );
-		    
 //		    define("BANK_MAYAPADA", ($this->bankmayapada=='yes'? false : true)); 
 //		    define("BANK_DKI", ($this->bankdki=='yes'? false : true)); 
-		    
             // Actions
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
             add_action('woocommerce_receipt_espay', array(&$this, 'receipt_page'));
-            
+
             // Payment listener/API hook
-            add_action( 'woocommerce_api_wc_gateway_espay', array( $this, 'check_espay_response' ) );
-        } 
-        
-	
+            add_action('woocommerce_api_wc_gateway_espay', array($this, 'check_espay_response'));
+        }
+
 //		function my_custom_checkout_field( $checkout ) {
 //		
 //			echo '<div id="my_custom_checkout_field"><h3>'.__('Test Agung').'</h3>';
@@ -118,35 +115,35 @@ function woocommerce_espay_init() {
 //			echo '</div>';
 //		
 //		}
-        
+
         function init_form_fields() {
 
             $this->form_fields = array(
                 'enabled' => array(
-                                'title' => __( 'Enable/Disable', 'woothemes' ), 
-                                'label' => __( 'Enable ESPay', 'woothemes' ), 
-                                'type' => 'checkbox', 
-                                'description' => '', 
-                                'default' => 'no'
-                            ), 
+                    'title' => __('Enable/Disable', 'woothemes'),
+                    'label' => __('Enable ESPay', 'woothemes'),
+                    'type' => 'checkbox',
+                    'description' => '',
+                    'default' => 'no'
+                ),
                 'title' => array(
-                                'title' => __( 'Title', 'woothemes' ), 
-                                'type' => 'text', 
-                                'description' => __( '', 'woothemes' ), 
-                                'default' => __( 'Pembayaran ESPay', 'woothemes' )
-                            ), 
+                    'title' => __('Title', 'woothemes'),
+                    'type' => 'text',
+                    'description' => __('', 'woothemes'),
+                    'default' => __('Pembayaran ESPay', 'woothemes')
+                ),
                 'description' => array(
-                                'title' => __( 'Description', 'woothemes' ), 
-                                'type' => 'textarea', 
-                                'description' => __( '', 'woothemes' ), 
-                                'default' => 'Sistem pembayaran menggunakan ESPay.'
-                            ),  
+                    'title' => __('Description', 'woothemes'),
+                    'type' => 'textarea',
+                    'description' => __('', 'woothemes'),
+                    'default' => 'Sistem pembayaran menggunakan ESPay.'
+                ),
                 'apikey' => array(
-                                'title' => __( 'Payment Key', 'woothemes' ), 
-                                'type' => 'text', 
-                                  'description' => __( ' ', 'woothemes' ), 
-                                'default' => ''
-                            ),
+                    'title' => __('Payment Key', 'woothemes'),
+                    'type' => 'text',
+                    'description' => __(' ', 'woothemes'),
+                    'default' => ''
+                ),
 //                'ipaddress' => array(
 //                                'title' => __( 'Payment Ip Address', 'woothemes' ), 
 //                                'type' => 'text', 
@@ -154,29 +151,27 @@ function woocommerce_espay_init() {
 //                                'default' => ''
 //                            ),
                 'paymentpassword' => array(
-                                'title' => __( 'Service Password', 'woothemes' ), 
-                                'type' => 'password', 
-                                  'description' => __( ' ', 'woothemes' ), 
-                                'default' => ''
-                            ),
-                            
-			  	'signatureKey' => array(
-                                'title' => __( 'Signature Key', 'woothemes' ), 
-                                'type' => 'password', 
-                                  'description' => __( ' ', 'woothemes' ), 
-                                'default' => ''
-                            ),
-                            
-			  	'environment' => array(
-								'title'       => __( 'Environment', 'woocommerce' ),
-								'type'        => 'select',
-								'description' => '',
-								'default'     => 'development',
-								'options'     => array(
-									'development'  => 'Sandbox',
-									'production' => 'Production',
-								),
-				),
+                    'title' => __('Service Password', 'woothemes'),
+                    'type' => 'password',
+                    'description' => __(' ', 'woothemes'),
+                    'default' => ''
+                ),
+                'signatureKey' => array(
+                    'title' => __('Signature Key', 'woothemes'),
+                    'type' => 'password',
+                    'description' => __(' ', 'woothemes'),
+                    'default' => ''
+                ),
+                'environment' => array(
+                    'title' => __('Environment', 'woocommerce'),
+                    'type' => 'select',
+                    'description' => '',
+                    'default' => 'development',
+                    'options' => array(
+                        'development' => 'Sandbox',
+                        'production' => 'Production',
+                    ),
+                ),
 //                 'bankmayapada' => array(
 //								  'title'       => __( 'Mayapada Internet Banking', 'woocommerce' ),
 //								  'type'        => 'checkbox',
@@ -191,33 +186,30 @@ function woocommerce_espay_init() {
 //								  'default'     => 'no',
 //								  'description' => __( '', 'woocommerce' )
 //			  	),
-
-				'min_order_total' => array(
-				        'title'     => __( 'Minimum Order Total', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-			
-				'max_order_total' => array(
-				        'title'     => __( 'Maximum Order Total', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'creditcardfee' => array(
-				        'title'     => __( 'Credit Card Fee %', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
+                'min_order_total' => array(
+                    'title' => __('Minimum Order Total', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'max_order_total' => array(
+                    'title' => __('Maximum Order Total', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'creditcardfee' => array(
+                    'title' => __('Credit Card Fee %', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
 //				'fee' => array(
 //				        'title'     => __( 'Fee', 'woocommerce' ),
 //				        'type'       => 'price',
@@ -226,213 +218,197 @@ function woocommerce_espay_init() {
 //				        'default'     => '0',
 //				        'desc_tip'    => true
 //				      ),
-				      
-				'fee_bca_klikpay' => array(
-				        'title'     => __( 'Transaction Fee BCA KlikPay', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_bri' => array(
-				        'title'     => __( 'Transaction Fee Epay Bri', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_mandiri_ib' => array(
-				        'title'     => __( 'Transaction Fee Mandiri Internet Banking', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_mandiri_ecash' => array(
-				        'title'     => __( 'Transaction Fee Mandiri Ecash', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				      
-				'fee_credit_card' => array(
-				        'title'     => __( 'Transaction Fee Credit Card', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_permata_atm' => array(
-				        'title'     => __( 'Transaction Fee Permata ATM', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_danamon_ob' => array(
-				        'title'     => __( 'Transaction Fee Danamon OB', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_dki_ib' => array(
-				        'title'     => __( 'Transaction Fee DKI Internet Banking', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_xl_tunai' => array(
-				        'title'     => __( 'Transaction Fee XL Tunai', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_bii_atm' => array(
-				        'title'     => __( 'Transaction Fee BII ATM', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_bnidbo' => array(
-				        'title'     => __( 'Transaction Fee BNI Debit Online', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_permata_net_pay' => array(
-				        'title'     => __( 'Transaction Fee Permata Net Pay', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_nobupay' => array(
-				        'title'     => __( 'Transaction Fee Nobupay', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
-				'fee_finpay' => array(
-				        'title'     => __( 'Transaction Fee Finpay', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_mandiri_sms' => array(
-				        'title'     => __( 'Transaction Fee Mandiri SM', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_mayapada_ib' => array(
-				        'title'     => __( 'Transaction Fee Mayapada Internet Banking', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_mualamatatm' => array(
-				        'title'     => __( 'Transaction Fee MUAMALAT ATM', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				'fee_bitcoin' => array(
-				        'title'     => __( 'Transaction Fee Bitcoin', 'woocommerce' ),
-				        'type'       => 'price',
-				        'placeholder'  => wc_format_localized_price( 0 ),
-				        'description'   => __( '', 'woocommerce' ),
-				        'default'     => '0',
-				        'desc_tip'    => true
-				      ),
-				      
+                'fee_bca_klikpay' => array(
+                    'title' => __('Transaction Fee BCA KlikPay', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_bri' => array(
+                    'title' => __('Transaction Fee Epay Bri', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_mandiri_ib' => array(
+                    'title' => __('Transaction Fee Mandiri Internet Banking', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_mandiri_ecash' => array(
+                    'title' => __('Transaction Fee Mandiri Ecash', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_credit_card' => array(
+                    'title' => __('Transaction Fee Credit Card', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_permata_atm' => array(
+                    'title' => __('Transaction Fee Permata ATM', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_danamon_ob' => array(
+                    'title' => __('Transaction Fee Danamon OB', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_dki_ib' => array(
+                    'title' => __('Transaction Fee DKI Internet Banking', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_xl_tunai' => array(
+                    'title' => __('Transaction Fee XL Tunai', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_bii_atm' => array(
+                    'title' => __('Transaction Fee BII ATM', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_bnidbo' => array(
+                    'title' => __('Transaction Fee BNI Debit Online', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_permata_net_pay' => array(
+                    'title' => __('Transaction Fee Permata Net Pay', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_nobupay' => array(
+                    'title' => __('Transaction Fee Nobupay', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_finpay' => array(
+                    'title' => __('Transaction Fee Finpay', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_mandiri_sms' => array(
+                    'title' => __('Transaction Fee Mandiri SM', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_mayapada_ib' => array(
+                    'title' => __('Transaction Fee Mayapada Internet Banking', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_mualamatatm' => array(
+                    'title' => __('Transaction Fee MUAMALAT ATM', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
+                'fee_bitcoin' => array(
+                    'title' => __('Transaction Fee Bitcoin', 'woocommerce'),
+                    'type' => 'price',
+                    'placeholder' => wc_format_localized_price(0),
+                    'description' => __('', 'woocommerce'),
+                    'default' => '0',
+                    'desc_tip' => true
+                ),
             );
-            
         }
-        
 
         public function admin_options() {
             echo '<table class="form-table">';
             $this->generate_settings_html();
             echo '</table>';
         }
-        
-	    private function callApiProduct(){
-	    	$url =   $this->environment == 'production'? 'https://116.90.162.172:812/rest/merchant/merchantinfo' : 'http://116.90.162.170:10809/rest/merchant/merchantinfo';
+
+        private function callApiProduct() {
+            $url = $this->environment == 'production' ? 'https://116.90.162.172:812/rest/merchant/merchantinfo' : 'http://116.90.162.170:10809/rest/merchant/merchantinfo';
 //	        $url = 'http://116.90.162.170:10809/rest/merchant/merchantinfo';  
 //	        $key =   Mage::getStoreConfig('payment/espay/paymentid');
-	        $key = $this->apikey;//'7ea1d02c9fab152d9c82c9415870b876';  
-	        $request = 'key='.$key;
-	
-	        $url =
-	        $curl = curl_init($url);
-	        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	        curl_setopt($curl, CURLOPT_POST, true);
-	        curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
-	
-	        curl_setopt($curl, CURLOPT_HEADER, false);
-	        // curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
-	        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); // use http 1.1
-	        curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-	        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
-	        // curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-	
-	        // NOTE: skip SSL certificate verification (this allows sending request to hosts with self signed certificates, but reduces security)
-	        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-	        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	
-	        // enable ssl version 3
-	        // this is added because mandiri ecash case that ssl version that have been not supported before
-	        curl_setopt($curl, CURLOPT_SSLVERSION, 1);
-	
-	        curl_setopt($curl, CURLOPT_VERBOSE, true);
-	        // save to temporary file (php built in stream), cannot save to php://memory
-	        $verbose = fopen('php://temp', 'rw+');
-	        curl_setopt($curl, CURLOPT_STDERR, $verbose);
-	
-	        $response = curl_exec($curl);
-	
-	        $response = json_decode($response);
-	        
-	        return $response->data;
-	  }
-	  
+            $key = $this->apikey; //'7ea1d02c9fab152d9c82c9415870b876';  
+            $request = 'key=' . $key;
+
+            $url = $curl = curl_init($url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
+
+            curl_setopt($curl, CURLOPT_HEADER, false);
+            // curl_setopt($curl, CURLOPT_ENCODING, 'gzip');
+            curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1); // use http 1.1
+            curl_setopt($curl, CURLOPT_TIMEOUT, 60);
+            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 60);
+            // curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            // NOTE: skip SSL certificate verification (this allows sending request to hosts with self signed certificates, but reduces security)
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+            // enable ssl version 3
+            // this is added because mandiri ecash case that ssl version that have been not supported before
+            curl_setopt($curl, CURLOPT_SSLVERSION, 1);
+
+            curl_setopt($curl, CURLOPT_VERBOSE, true);
+            // save to temporary file (php built in stream), cannot save to php://memory
+            $verbose = fopen('php://temp', 'rw+');
+            curl_setopt($curl, CURLOPT_STDERR, $verbose);
+
+            $response = curl_exec($curl);
+
+            $response = json_decode($response);
+
+            return $response->data;
+        }
+
 //		function endo_handling_fee() {
 //		     global $woocommerce;
 //		 
@@ -445,714 +421,647 @@ function woocommerce_espay_init() {
 //		     return $test;
 //		}
 
-      	function payment_fields() {
-        	global $woocommerce;
-        	$callApiProduct = $this->callApiProduct();
+        function payment_fields() {
+            global $woocommerce;
+            $callApiProduct = $this->callApiProduct();
 //        	echo woocommerce_price($this -> current_gateway_extra_charges);
 
-	        echo'<h4><b>Online Payment</b></h4>';
-        	foreach ($callApiProduct as $value) {
-        		$valJson = json_encode($value);
-        		$valJsonPost = json_decode($valJson);
-        		
-        		$valJsonPost->bankCode;
-        		$valJsonPost->productCode;
-        		$valJsonPost->productName;
-	        	?>
-	        	
-<!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?=$valJsonPost->productCode;?>" value='{"productName":"<?=$valJsonPost->productName?>","bankCode":"<?=$valJsonPost->bankCode?>","productCode":"<?=$valJsonPost->productCode?>"}'>-->
-	        	<label for="espayproduct-<?=$valJsonPost->productCode;?>" style="display: inline;"> 
-	        		<?//=$valJsonPost->productName?>
-					<?php 
+            echo'<h4><b>Online Payment</b></h4>';
+            foreach ($callApiProduct as $value) {
+                $valJson = json_encode($value);
+                $valJsonPost = json_decode($valJson);
+
+                $valJsonPost->bankCode;
+                $valJsonPost->productCode;
+                $valJsonPost->productName;
+                ?>
+
+                <!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>-->
+                <label for="espayproduct-<?= $valJsonPost->productCode; ?>" style="display: inline;"> 
+                    <?//=$valJsonPost->productName?>
+                <?php
 //					$src = "https://secure.sgo.co.id/images/products/".$valJsonPost->productCode.".png";
 //					echo '<img src="' .$src.'" alt="' . esc_attr__('', 'woocommerce' ) . '" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-right: 10px;" />';
 //					echo 'Payment using '.$valJsonPost->productName ;
-					?>
-					<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?=$valJsonPost->productCode;?>" value='{"productName":"<?=$valJsonPost->productName?>","bankCode":"<?=$valJsonPost->bankCode?>","productCode":"<?=$valJsonPost->productCode?>"}'>
-	        		<?php 
-					echo'
-				   		<img align="middle" src="https://secure.sgo.co.id/images/products/'.$valJsonPost->productCode.'.png" width="100" height="90" style="border-radius:30px;background:#7dd4e1;padding:15px;border:4px solid #fff;"/>
-						Payment Using '.$valJsonPost->productName.'';
-					?>
-					
-	        	</label></p>
-	        	<?php 
-	        }
-	        ?>
-	         	<div align=center>
-	    			Powered by <a href="http://www.espay.id/"> <b><font color="#7dd4e1">espay.id</font></b></a>
-	    			</div>
-	        	
-	        <?php 
+                ?>
+                    <input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>
+                <?php
+                echo'
+				   		<img align="middle" src="https://secure.sgo.co.id/images/products/' . $valJsonPost->productCode . '.png" width="100" height="90" style="border-radius:30px;background:#7dd4e1;padding:15px;border:4px solid #fff;"/>
+						Payment Using ' . $valJsonPost->productName . '';
+                ?>
+
+                </label></p>
+                <?php
+            }
+            ?>
+            <div align=center>
+                Powered by <a href="http://www.espay.id/"> <b><font color="#7dd4e1">espay.id</font></b></a>
+            </div>
+
+            <?php
         }
-        
+
         function receipt_page($order) {
-        	global $woocommerce;
-        	$order = new WC_Order($order_id);
-			$cart_url = $woocommerce->cart->get_cart_url();
-			$checkout =  $woocommerce->cart->get_checkout_url();
+            global $woocommerce;
+            $order = new WC_Order($order_id);
+            $cart_url = $woocommerce->cart->get_cart_url();
+            $checkout = $woocommerce->cart->get_checkout_url();
 
-			echo $this->generate_espay_form($order);
+            echo $this->generate_espay_form($order);
         }
 
-   	 	private function get_post( $name ) {
-                if( isset( $_POST[$name] ) )
-                    return $_POST[$name];
-                else
-                    return NULL;
+        private function get_post($name) {
+            if (isset($_POST[$name]))
+                return $_POST[$name];
+            else
+                return NULL;
         }
-        
+
         function process_payment($order_id) {
 //            global $woocommerce;
             global $woo_cp, $woocommerce;
-            
+
             $order = new WC_Order($order_id);
-            
-			WC()->session->set( 'espayproduct' , $this->get_post( 'espayproduct' ));
-			WC()->session->set( 'order_id_get' , $order_id);
-			
-			if($this->apikey !=''){ //sukses
+
+            WC()->session->set('espayproduct', $this->get_post('espayproduct'));
+            WC()->session->set('order_id_get', $order_id);
+
+            if ($this->apikey != '') { //sukses
 //					$order->reduce_order_stock();
 //					WC()->cart->empty_cart();	
-				$order->add_order_note( __( "Sedang menunggu konfirmasi dan pembayaran", 'woothemes' ));
-		            return array(
-		                'result' => 'success',
-		                'redirect' => $order->get_checkout_payment_url( true )
-		//				'redirect' => $this->get_return_url( $order ),
-		            );
-			}
-			else{ //error submit
-			    $order->add_order_note( __( "ESPay Payment failed. Some trouble happened.", 'woothemes' ). $response['err_code'] .':'. $this->apikey);
-        		wc_add_notice( __( 'No response from payment gateway server. Try again later or contact the site administrator.', 'woothemes' ). '- '.$this->apikey, $notice_type = 'error' );
-			}
+                $order->add_order_note(__("Sedang menunggu konfirmasi dan pembayaran", 'woothemes'));
+                return array(
+                    'result' => 'success',
+                    'redirect' => $order->get_checkout_payment_url(true)
+                        //				'redirect' => $this->get_return_url( $order ),
+                );
+            } else { //error submit
+                $order->add_order_note(__("ESPay Payment failed. Some trouble happened.", 'woothemes') . $response['err_code'] . ':' . $this->apikey);
+                wc_add_notice(__('No response from payment gateway server. Try again later or contact the site administrator.', 'woothemes') . '- ' . $this->apikey, $notice_type = 'error');
+            }
         }
-        
-        public function password(){
-        	return $this->paymentpassword;
+
+        public function password() {
+            return $this->paymentpassword;
         }
-        
-        public function sigKey(){
-        	return $this->signatureKey;
+
+        public function sigKey() {
+            return $this->signatureKey;
         }
-        
-        public function creditcardfee(){
-        	return $this->creditcardfee;
+
+        public function creditcardfee() {
+            return $this->creditcardfee;
         }
-        
-      	public function validate_fields()
-		{
-			// SET GLOBAL VARS
+
+        public function validate_fields() {
+            // SET GLOBAL VARS
 //			global $woocommerce;
-			global $woo_cp, $woocommerce;
-			
-			// CHECK FOR MISSING FIELDS
-			$espayproduct = $this->get_post( 'espayproduct' );
-			if ( empty( $espayproduct )) {
-				wc_add_notice( 'Please Select Payment Method.', 'error' );
-				return false;
-			}
-	
-			// CHECK FOR NO ERRORS
-			//if(!$woocommerce->error_count()){
-			if(!wc_get_notices('error')){
-				return true;
-			}else{
-				// NO VALID
-			}
-		}
-		
-		public function generate_espay_form($order_id) {
+            global $woo_cp, $woocommerce;
+
+            // CHECK FOR MISSING FIELDS
+            $espayproduct = $this->get_post('espayproduct');
+            if (empty($espayproduct)) {
+                wc_add_notice('Please Select Payment Method.', 'error');
+                return false;
+            }
+
+            // CHECK FOR NO ERRORS
+            //if(!$woocommerce->error_count()){
+            if (!wc_get_notices('error')) {
+                return true;
+            } else {
+                // NO VALID
+            }
+        }
+
+        public function generate_espay_form($order_id) {
 //            global $woocommerce;
-			global $woo_cp, $woocommerce, $wpdb;
-            		
+            global $woo_cp, $woocommerce, $wpdb;
+
+            $prefix = $wpdb->prefix;
+
             $order = new WC_Order($order_id);
-            
-			$espayproductOri = WC()->session->get( 'espayproduct' ); 
-			$order_id_get = WC()->session->get( 'order_id_get' ); 
-			$espayproduct = stripslashes($espayproductOri);
+
+            $espayproductOri = WC()->session->get('espayproduct');
+            $order_id_get = WC()->session->get('order_id_get');
+            $espayproduct = stripslashes($espayproductOri);
 
 //			echo '<br>';
 //			echo $str = '{"bankCode":"097","productCode":"MayapadaIb"}';
 
-			$valJsonPost = json_decode($espayproduct);
-        	$productName = $valJsonPost->productName;
-        	$bankCode = $valJsonPost->bankCode;
-        	$productCode = $valJsonPost->productCode;
+            $valJsonPost = json_decode($espayproduct);
+            $productName = $valJsonPost->productName;
+            $bankCode = $valJsonPost->bankCode;
+            $productCode = $valJsonPost->productCode;
 //        	$redirect = add_query_arg('key', $order->order_key, add_query_arg('order', $_REQUEST['id_order'], get_permalink(woocommerce_get_page_id('thanks'))));
-        	$urlsite = get_site_url();
+            $urlsite = get_site_url();
 
-        	if($productCode == 'PERMATAATM' || $productCode == 'MUAMALATATM' || $productCode == 'BIIATM'){ 
-        		$urlplugin = '/wp-content/plugins/espay-sgo/notif/notif-atm.php?order='.$order_id_get.'';
-        	}
-        	else{
-        		$urlplugin = '/wp-content/plugins/espay-sgo/notif/notif-ib.php?order='.$order_id_get.'';
-        	}
-        	
-        	$redirect = $urlsite.$urlplugin;
+            if ($productCode == 'PERMATAATM' || $productCode == 'MUAMALATATM' || $productCode == 'BIIATM') {
+                $urlplugin = '/wp-content/plugins/espay-sgo/notif/notif-atm.php?order=' . $order_id_get . '';
+            } else {
+                $urlplugin = '/wp-content/plugins/espay-sgo/notif/notif-ib.php?order=' . $order_id_get . '';
+            }
+
+            $redirect = $urlsite . $urlplugin;
 //        	http://116.90.162.173:17122/wordpress-4.4.2/wp-content/plugins/espay-sgo/notif.php?order=20#
 
-        	$sql = "SELECT * 
-			FROM wp_postmeta
+            $sql = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id_get)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id_get) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_total','_order_total_ori')
+			{$prefix}postmeta.meta_key in('_order_total','_order_total_ori')
 			";
-			//wp_postmeta.meta_key = '".$meta_key."'
-			$results = $wpdb->get_results( $sql); 
-        	?> 
-        	<?php 
-    	    if($productCode == 'CREDITCARD'){
-    	    	
-    	    	if($productCode == 'BCAKLIKPAY')
-        		{
-		        	$fee = ($this->fee_bca_klikpay == '')?0:$this->fee_bca_klikpay;
-        		}
-        		elseif($productCode == 'XLTUNAI')
-        		{
-		        	$fee = ($this->fee_xl_tunai == '')?0:$this->fee_xl_tunai;
-        		}
-        		elseif($productCode == 'BIIATM')
-        		{
-		        	$fee = ($this->fee_bii_atm == '')?0:$this->fee_bii_atm;
-        		}
-        		elseif($productCode == 'BNIDBO')
-        		{
-		        	$fee = ($this->fee_bnidbo == '')?0:$this->fee_bnidbo;
-        		}
-        		elseif($productCode == 'DANAMONOB')
-        		{
-		        	$fee = ($this->fee_danamon_ob == '')?0:$this->fee_danamon_ob;
-        		}
-        		elseif($productCode == 'DKIIB')
-        		{
-		        	$fee = ($this->fee_dki_ib == '')?0:$this->fee_dki_ib;
-        		}
-        		elseif($productCode == 'MANDIRIIB')
-        		{
-		        	$fee = ($this->fee_mandiri_ib == '')?0:$this->fee_mandiri_ib;
-        		}
-        		elseif($productCode == 'MANDIRIECASH')
-        		{
-		        	$fee = ($this->fee_mandiri_ecash == '')?0:$this->fee_mandiri_ecash;
-        		}
-        		elseif($productCode == 'FINPAY195')
-        		{
-		        	$fee = ($this->fee_finpay == '')?0:$this->fee_finpay;
-        		}
-        		elseif($productCode == 'CREDITCARD')
-        		{
-		        	$fee = ($this->fee_credit_card == '')?0:$this->fee_credit_card;
-        		}
-        		elseif($productCode == 'MANDIRISMS')
-        		{
-		        	$fee = ($this->fee_mandiri_sms == '')?0:$this->fee_mandiri_sms;
-        		}
-        		elseif($productCode == 'MAYAPADAIB')
-        		{
-		        	$fee = ($this->fee_mayapada_ib == '')?0:$this->fee_mayapada_ib;
-        		}
-        		elseif($productCode == 'MUAMALATATM')
-        		{
-		        	$fee = ($this->fee_mualamatatm == '')?0:$this->fee_mualamatatm;
-        		}
-        		elseif($productCode == 'NOBUPAY')
-        		{
-		        	$fee = ($this->fee_nobupay == '')?0:$this->fee_nobupay;
-        		}
-        		elseif($productCode == 'PERMATAATM')
-        		{
-		        	$fee = ($this->fee_permata_atm == '')?0:$this->fee_permata_atm;
-        		}    	    	
-				else
-        		{
-		        	$fee = 0;
-        		}
-        		
-        		$creditcardfee = ($this->creditcardfee == '')?0:$this->creditcardfee;
+            //{$prefix}postmeta.meta_key = '".$meta_key."'
+            $results = $wpdb->get_results($sql);
+            ?> 
+            <?php
+            if ($productCode == 'CREDITCARD') {
+
+                if ($productCode == 'BCAKLIKPAY') {
+                    $fee = ($this->fee_bca_klikpay == '') ? 0 : $this->fee_bca_klikpay;
+                } elseif ($productCode == 'XLTUNAI') {
+                    $fee = ($this->fee_xl_tunai == '') ? 0 : $this->fee_xl_tunai;
+                } elseif ($productCode == 'BIIATM') {
+                    $fee = ($this->fee_bii_atm == '') ? 0 : $this->fee_bii_atm;
+                } elseif ($productCode == 'BNIDBO') {
+                    $fee = ($this->fee_bnidbo == '') ? 0 : $this->fee_bnidbo;
+                } elseif ($productCode == 'DANAMONOB') {
+                    $fee = ($this->fee_danamon_ob == '') ? 0 : $this->fee_danamon_ob;
+                } elseif ($productCode == 'DKIIB') {
+                    $fee = ($this->fee_dki_ib == '') ? 0 : $this->fee_dki_ib;
+                } elseif ($productCode == 'MANDIRIIB') {
+                    $fee = ($this->fee_mandiri_ib == '') ? 0 : $this->fee_mandiri_ib;
+                } elseif ($productCode == 'MANDIRIECASH') {
+                    $fee = ($this->fee_mandiri_ecash == '') ? 0 : $this->fee_mandiri_ecash;
+                } elseif ($productCode == 'FINPAY195') {
+                    $fee = ($this->fee_finpay == '') ? 0 : $this->fee_finpay;
+                } elseif ($productCode == 'CREDITCARD') {
+                    $fee = ($this->fee_credit_card == '') ? 0 : $this->fee_credit_card;
+                } elseif ($productCode == 'MANDIRISMS') {
+                    $fee = ($this->fee_mandiri_sms == '') ? 0 : $this->fee_mandiri_sms;
+                } elseif ($productCode == 'MAYAPADAIB') {
+                    $fee = ($this->fee_mayapada_ib == '') ? 0 : $this->fee_mayapada_ib;
+                } elseif ($productCode == 'MUAMALATATM') {
+                    $fee = ($this->fee_mualamatatm == '') ? 0 : $this->fee_mualamatatm;
+                } elseif ($productCode == 'NOBUPAY') {
+                    $fee = ($this->fee_nobupay == '') ? 0 : $this->fee_nobupay;
+                } elseif ($productCode == 'PERMATAATM') {
+                    $fee = ($this->fee_permata_atm == '') ? 0 : $this->fee_permata_atm;
+                } else {
+                    $fee = 0;
+                }
+
+                $creditcardfee = ($this->creditcardfee == '') ? 0 : $this->creditcardfee;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
 //        		rumus
 //				nampilin cc = (((total + fee) *rate%) + total) + fee
 //	            $amount = $results[0]->meta_value; 	//total
-    	    	if($results[1]->meta_value){
-	        		$amount = $results[1]->meta_value;
-	        	}
-	        	else{
-	        		$amount = $results[0]->meta_value;
-	        	}
-		        
-	            $amountcredit = $amount + $fee;
-	            $amountFinish =  (($amountcredit * $creditcardfee)/100) + $fee;
-		        $totalamount = $amount + $amountFinish; //disc rate
-        	}
-        	else{
-        		if($productCode == 'BCAKLIKPAY')
-        		{
-		        	$fee = ($this->fee_bca_klikpay == '')?0:$this->fee_bca_klikpay;
-        		}
-        		elseif($productCode == 'XLTUNAI')
-        		{
-		        	$fee = ($this->fee_xl_tunai == '')?0:$this->fee_xl_tunai;
-        		}
-        		elseif($productCode == 'BIIATM')
-        		{
-		        	$fee = ($this->fee_bii_atm == '')?0:$this->fee_bii_atm;
-        		}
-        		elseif($productCode == 'BNIDBO')
-        		{
-		        	$fee = ($this->fee_bnidbo == '')?0:$this->fee_bnidbo;
-        		}
-        		elseif($productCode == 'DANAMONOB')
-        		{
-		        	$fee = ($this->fee_danamon_ob == '')?0:$this->fee_danamon_ob;
-        		}
-        		elseif($productCode == 'DKIIB')
-        		{
-		        	$fee = ($this->fee_dki_ib == '')?0:$this->fee_dki_ib;
-        		}
-        		elseif($productCode == 'MANDIRIIB')
-        		{
-		        	$fee = ($this->fee_mandiri_ib == '')?0:$this->fee_mandiri_ib;
-        		}
-        		elseif($productCode == 'MANDIRIECASH')
-        		{
-		        	$fee = ($this->fee_mandiri_ecash == '')?0:$this->fee_mandiri_ecash;
-        		}
-        		elseif($productCode == 'FINPAY195')
-        		{
-		        	$fee = ($this->fee_finpay == '')?0:$this->fee_finpay;
-        		}
-        		elseif($productCode == 'CREDITCARD')
-        		{
-		        	$fee = ($this->fee_credit_card == '')?0:$this->fee_credit_card;
-        		}
-        		elseif($productCode == 'MANDIRISMS')
-        		{
-		        	$fee = ($this->fee_mandiri_sms == '')?0:$this->fee_mandiri_sms;
-        		}
-        		elseif($productCode == 'MAYAPADAIB')
-        		{
-		        	$fee = ($this->fee_mayapada_ib == '')?0:$this->fee_mayapada_ib;
-        		}
-        		elseif($productCode == 'MUAMALATATM')
-        		{
-		        	$fee = ($this->fee_mualamatatm == '')?0:$this->fee_mualamatatm;
-        		}
-        		elseif($productCode == 'NOBUPAY')
-        		{
-		        	$fee = ($this->fee_nobupay == '')?0:$this->fee_nobupay;
-        		}
-        		elseif($productCode == 'PERMATAATM')
-        		{
-		        	$fee = ($this->fee_permata_atm == '')?0:$this->fee_permata_atm;
-        		}
-        		else
-        		{
-		        	$fee = 0;
-        		}
-        		
-	        	$creditcardfee = 0;
+                if ($results[1]->meta_value) {
+                    $amount = $results[1]->meta_value;
+                } else {
+                    $amount = $results[0]->meta_value;
+                }
+
+                $amountcredit = $amount + $fee;
+                $amountFinish = (($amountcredit * $creditcardfee) / 100) + $fee;
+                $totalamount = $amount + $amountFinish; //disc rate
+            } else {
+                if ($productCode == 'BCAKLIKPAY') {
+                    $fee = ($this->fee_bca_klikpay == '') ? 0 : $this->fee_bca_klikpay;
+                } elseif ($productCode == 'XLTUNAI') {
+                    $fee = ($this->fee_xl_tunai == '') ? 0 : $this->fee_xl_tunai;
+                } elseif ($productCode == 'BIIATM') {
+                    $fee = ($this->fee_bii_atm == '') ? 0 : $this->fee_bii_atm;
+                } elseif ($productCode == 'BNIDBO') {
+                    $fee = ($this->fee_bnidbo == '') ? 0 : $this->fee_bnidbo;
+                } elseif ($productCode == 'DANAMONOB') {
+                    $fee = ($this->fee_danamon_ob == '') ? 0 : $this->fee_danamon_ob;
+                } elseif ($productCode == 'DKIIB') {
+                    $fee = ($this->fee_dki_ib == '') ? 0 : $this->fee_dki_ib;
+                } elseif ($productCode == 'MANDIRIIB') {
+                    $fee = ($this->fee_mandiri_ib == '') ? 0 : $this->fee_mandiri_ib;
+                } elseif ($productCode == 'MANDIRIECASH') {
+                    $fee = ($this->fee_mandiri_ecash == '') ? 0 : $this->fee_mandiri_ecash;
+                } elseif ($productCode == 'FINPAY195') {
+                    $fee = ($this->fee_finpay == '') ? 0 : $this->fee_finpay;
+                } elseif ($productCode == 'CREDITCARD') {
+                    $fee = ($this->fee_credit_card == '') ? 0 : $this->fee_credit_card;
+                } elseif ($productCode == 'MANDIRISMS') {
+                    $fee = ($this->fee_mandiri_sms == '') ? 0 : $this->fee_mandiri_sms;
+                } elseif ($productCode == 'MAYAPADAIB') {
+                    $fee = ($this->fee_mayapada_ib == '') ? 0 : $this->fee_mayapada_ib;
+                } elseif ($productCode == 'MUAMALATATM') {
+                    $fee = ($this->fee_mualamatatm == '') ? 0 : $this->fee_mualamatatm;
+                } elseif ($productCode == 'NOBUPAY') {
+                    $fee = ($this->fee_nobupay == '') ? 0 : $this->fee_nobupay;
+                } elseif ($productCode == 'PERMATAATM') {
+                    $fee = ($this->fee_permata_atm == '') ? 0 : $this->fee_permata_atm;
+                } else {
+                    $fee = 0;
+                }
+
+                $creditcardfee = 0;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
-	        	
-	        	if($results[1]->meta_value){
-	        		$amount = $results[1]->meta_value;
-	        	}
-	        	else{
-	        		$amount = $results[0]->meta_value;
-	        	}
+
+                if ($results[1]->meta_value) {
+                    $amount = $results[1]->meta_value;
+                } else {
+                    $amount = $results[0]->meta_value;
+                }
 //		        echo'<pre>';
 //		        var_dump($results);
 //	        	echo'</pre>';
-		        
-		        $totalamount = $amount+$fee;
-        	}
-        	
-	            $currency = get_woocommerce_currency_symbol();
+
+                $totalamount = $amount + $fee;
+            }
+
+            $currency = get_woocommerce_currency_symbol();
 //            $total = $woocommerce->cart->get_cart_total(); //sudah menggunakan rupiah 55.000
 //	            $amount = WC()->cart->cart_contents_total; //ori angka
 //	            $totalamount = $amount+$fee;
 //            echo number_format($totalamount, 2, '.', '');
-    			
             ?>
             <table class="shop_table order_details">
-				<tbody>
-					<h2>Additional Information</h2>	
-					<hr>				
-				</tbody>
-				<tfoot>
-						<tr>
-							<th scope="row">Online Payment</th>
-							<td><?php echo $productName; ?></td>
-						</tr>
-						
-						<tr>
-							<th scope="row">Transaction Fee</th>
-							<td><?php echo $currency.number_format($fee, 2); ?></td>
-						</tr>
-						
-						<?php 
-						if($productCode == 'CREDITCARD'){
-						?>
-							<tr>
-								<th scope="row">Merchant Discount Rate</th>
-								<td><?php echo $creditcardfee.'%'; ?></td>
-							</tr>
-						<?php }?>	
+                <tbody>
+                <h2>Additional Information</h2>	
+                <hr>				
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">Online Payment</th>
+                        <td><?php echo $productName; ?></td>
+                    </tr>
 
-						<tr>
-							<th scope="row">Total Amount</th>
-							<td><?php echo $currency.number_format($totalamount, 2); ?></td>
-						</tr>
-				</tfoot>
-			</table>
-			
-			<?php 
-			if($totalamount < $this->min_order_total){
+                    <tr>
+                        <th scope="row">Transaction Fee</th>
+                        <td><?php echo $currency . number_format($fee, 2); ?></td>
+                    </tr>
+
+            <?php
+            if ($productCode == 'CREDITCARD') {
+                ?>
+                        <tr>
+                            <th scope="row">Merchant Discount Rate</th>
+                            <td><?php echo $creditcardfee . '%'; ?></td>
+                        </tr>
+            <?php } ?>	
+
+                    <tr>
+                        <th scope="row">Total Amount</th>
+                        <td><?php echo $currency . number_format($totalamount, 2); ?></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <?php
+            if ($totalamount < $this->min_order_total) {
 //			echo 'Total amount is exceeding your limit amount per transaction for';
-				echo '<i><b><font color="red">Error: Amount cannot be lower than '.$currency.number_format($this->min_order_total, 2).'</font></b></i>';
-			?>
-			<br>
-				<input type="submit" class="submit buy button" value="<?php _e('Confirm and Pay','woocommerce'); ?>" disabled />
-			<?php 
-			}
-			elseif($totalamount > $this->max_order_total){
-				echo '<i><b><font color="red">Error: Total amount is exceeding your maximum amount '.$currency.number_format($this->max_order_total, 2).'</font></b></i>';
-			?>
-			<br>
-				<input type="submit" class="submit buy button" value="<?php _e('Confirm and Pay','woocommerce'); ?>" disabled />
-			<?php 
-			}
-			
-			else{?>
-            <form method="POST" action="<?php //echo $this->payurl; ?>">
-				<input type="hidden" name="method" value="<?php echo $method; ?>" />
-				<input type="hidden" name="merchantUUID" value="<?php echo $this->settings['merchant_id']; ?>" />
-				<input type="submit" name="post" class="submit buy button" value="<?php _e('Confirm and Pay','woocommerce'); ?>" />
-			</form>
-            <?php }?>
-            
-            <?php if(isset($_POST['post'])){
-					ini_set( 'display_errors', false );
-					error_reporting( 0 );
-            		$payment_method_title = 'ESPay Payment Gateways - '.$productName. ' - (Waiting for Payment)'; 
-			        $order_productcode_espay = '_order_productcode_espay';
-            		$order_fee_espay = '_order_fee_espay';
-			        $order_creditcardfee_espay = '_order_creditcardfee_espay';
-			        $order_total_ori = '_order_total_ori';
-			        
-            		$wpdb->query($wpdb->prepare("UPDATE wp_postmeta SET meta_value='".$payment_method_title."' WHERE post_id='".$order_id_get."' and meta_key='_payment_method_title'"));
-					$wpdb->query($wpdb->prepare("UPDATE wp_postmeta SET meta_value='".$totalamount.'.00'."' WHERE post_id='".$order_id_get."' and meta_key='_order_total'"));
-					
-            		if($productCode == 'CREDITCARD'){
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_productcode_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_productcode_espay."', '".$productCode."')"  );
-            			
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_fee_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_fee_espay."', '".$fee.'.00'."')"  );
-            			
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_creditcardfee_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_creditcardfee_espay."', '".$creditcardfee.'.00'."')"  );
-            		
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_total_ori."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_total_ori."', '".$amount."')"  );
-            		}
-            		else{
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_productcode_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_productcode_espay."', '".$productCode."')"  );
-            			
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_fee_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_fee_espay."', '".$fee.'.00'."')"  );
-            			
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_creditcardfee_espay."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_creditcardfee_espay."', '".$creditcardfee.'.00'."')"  );
-            		
-            			$wpdb->query("DELETE FROM wp_postmeta where post_id='".$order_id_get."' and meta_key= '".$order_total_ori."'");
-            			$wpdb->query("INSERT INTO wp_postmeta (post_id, meta_key, meta_value) VALUES ('".$order_id_get."', '".$order_total_ori."', '".$amount."')"  );
-            		}
-            		
-            		$wpdb->flush();
-            		
-            		$order->reduce_order_stock();
-					WC()->cart->empty_cart();
+                echo '<i><b><font color="red">Error: Amount cannot be lower than ' . $currency . number_format($this->min_order_total, 2) . '</font></b></i>';
+                ?>
+                <br>
+                <input type="submit" class="submit buy button" value="<?php _e('Confirm and Pay', 'woocommerce'); ?>" disabled />
+                <?php
+            } elseif ($totalamount > $this->max_order_total) {
+                echo '<i><b><font color="red">Error: Total amount is exceeding your maximum amount ' . $currency . number_format($this->max_order_total, 2) . '</font></b></i>';
+                ?>
+                <br>
+                <input type="submit" class="submit buy button" value="<?php _e('Confirm and Pay', 'woocommerce'); ?>" disabled />
+                <?php
+            } else {
+                ?>
+                <form method="POST" action="<?php //echo $this->payurl; ?>">
+                    <input type="hidden" name="method" value="<?php echo $method; ?>" />
+                    <input type="hidden" name="merchantUUID" value="<?php echo $this->settings['merchant_id']; ?>" />
+                    <input type="submit" name="post" class="submit buy button" value="<?php _e('Confirm and Pay', 'woocommerce'); ?>" />
+                </form>
+            <?php } ?>
+
+            <?php
+            if (isset($_POST['post'])) {
+                ini_set('display_errors', false);
+                error_reporting(0);
+                $payment_method_title = 'ESPay Payment Gateways - ' . $productName . ' - (Waiting for Payment)';
+                $order_productcode_espay = '_order_productcode_espay';
+                $order_fee_espay = '_order_fee_espay';
+                $order_creditcardfee_espay = '_order_creditcardfee_espay';
+                $order_total_ori = '_order_total_ori';
+
+                $wpdb->query($wpdb->prepare("UPDATE {$prefix}postmeta SET meta_value='" . $payment_method_title . "' WHERE post_id='" . $order_id_get . "' and meta_key='_payment_method_title'"));
+                $wpdb->query($wpdb->prepare("UPDATE {$prefix}postmeta SET meta_value='" . $totalamount . '.00' . "' WHERE post_id='" . $order_id_get . "' and meta_key='_order_total'"));
+
+                if ($productCode == 'CREDITCARD') {
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
+                } else {
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
+
+                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
+                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
+                }
+
+                $wpdb->flush();
+
+                $order->reduce_order_stock();
+                WC()->cart->empty_cart();
 //					$order->add_order_note( __( 'Menunggu pembayaran melalui espay via '.$productName.' dengan id transaksi '.$_REQUEST['trx_id'], 'woocommerce' ) );
 //            	https://secure.sgo.co.id/public/signature/js //production
 //	            http://secure-dev.sgo.co.id/public/signature/js //development
-				$urlserver = $this->environment == 'production'? 'https://secure.sgo.co.id/public/signature/js' : 'http://secure-dev.sgo.co.id/public/signature/js';
-				?>
-	            <script type="text/javascript" src="<?=$urlserver?>"></script>
-	        	<script type="text/javascript">
-	            window.onload = function () {
-	                var data = {
-	                    paymentId: '<?=$order_id_get?>', //ORDERID
-	                    key: '<?=$this->apikey?>',
-	                    backUrl: encodeURIComponent ('<?=$redirect?>'),
-	                    bankCode:'<?=$bankCode?>',
-	                    bankProduct :'<?=$productCode?>'//'MAYAPADAIB'
-	                },
-	                sgoPlusIframe = document.getElementById("sgoplus-iframe");
-	                if (sgoPlusIframe !== null) {
-	                    sgoPlusIframe.src = SGOSignature.getIframeURL(data);
-	                }
-	                SGOSignature.receiveForm();
-	            };
-	       	 	</script>
-	        	<iframe id="sgoplus-iframe" src="" scrolling="no" allowtransparency="true" frameborder="0" height="300"></iframe>
-            <?php 
+                $urlserver = $this->environment == 'production' ? 'https://secure.sgo.co.id/public/signature/js' : 'http://secure-dev.sgo.co.id/public/signature/js';
+                ?>
+                <script type="text/javascript" src="<?= $urlserver ?>"></script>
+                <script type="text/javascript">
+                    window.onload = function() {
+                        var data = {
+                            paymentId: '<?= $order_id_get ?>', //ORDERID
+                            key: '<?= $this->apikey ?>',
+                            backUrl: encodeURIComponent('<?= $redirect ?>'),
+                            bankCode: '<?= $bankCode ?>',
+                            bankProduct: '<?= $productCode ?>'//'MAYAPADAIB'
+                        },
+                        sgoPlusIframe = document.getElementById("sgoplus-iframe");
+                        if (sgoPlusIframe !== null) {
+                            sgoPlusIframe.src = SGOSignature.getIframeURL(data);
+                        }
+                        SGOSignature.receiveForm();
+                    };
+                </script>
+                <iframe id="sgoplus-iframe" src="" scrolling="no" allowtransparency="true" frameborder="0" height="300"></iframe>
+                <?php
             }
         }
+
     }
 
     function add_espay_gateway($methods) {
         $methods[] = 'WC_Gateway_eSpay';
         return $methods;
     }
-    
-    function myaccount_view_order_admin($order_id ){
-    	global $woocommerce, $wpdb;
-		$order = new WC_Order($order_id);
-		$order_id = trim(str_replace('#', '', $order->get_order_number()));
-		$currency = get_woocommerce_currency_symbol();
-		
-    	$sql = "SELECT * 
-			FROM wp_postmeta
+
+    function myaccount_view_order_admin($order_id) {
+        global $woocommerce, $wpdb;
+        $order = new WC_Order($order_id);
+        $order_id = trim(str_replace('#', '', $order->get_order_number()));
+        $currency = get_woocommerce_currency_symbol();
+
+        $prefix = $wpdb->prefix;
+
+        $sql = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_order_total_ori')
+			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_order_total_ori')
 			";
-			//wp_postmeta.meta_key = '".$meta_key."'
-			$results = $wpdb->get_results( $sql); 
+        //{$prefix}postmeta.meta_key = '".$meta_key."'
+        $results = $wpdb->get_results($sql);
 //			echo'<pre>';
 //			var_dump($results);
 //			echo'</pre>';
-			$amountOri = $results[0]->meta_value;
-		    $productCode = $results[1]->meta_value;
-			$feeOri = $results[2]->meta_value;
-			$creditcardfeeOri = $results[3]->meta_value;
-			$amountOriginal = $results[4]->meta_value;
-			
-	     	if($productCode == 'CREDITCARD'){
-        		$fee = ($feeOri == '')?0:$feeOri;
-        		$creditcardfee = ($creditcardfeeOri == '')?0:$creditcardfeeOri;
+        $amountOri = $results[0]->meta_value;
+        $productCode = $results[1]->meta_value;
+        $feeOri = $results[2]->meta_value;
+        $creditcardfeeOri = $results[3]->meta_value;
+        $amountOriginal = $results[4]->meta_value;
+
+        if ($productCode == 'CREDITCARD') {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = ($creditcardfeeOri == '') ? 0 : $creditcardfeeOri;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
-		        $totalamount = $amountOri;
-        	}
-        	else{
-	        	$fee = ($feeOri == '')?0:$feeOri;
-	        	$creditcardfee = 0;
+            $totalamount = $amountOri;
+        } else {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = 0;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
-		        $amount = $amountOri;
-	        	$totalamount = ($amount+$fee) - $fee;
-        	}
-		?>
-		<tr>
-			<td class="label"></td>
-			<td class="total">
-			 &nbsp;
-			</td>
-			<td width="1%"></td>
-		</tr>
-		
-		<tr>
-			<td class="label"><?php _e( 'Subtotal', 'woocommerce' ); ?>:</td>
-			<td class="total">
-				<?php echo $currency.number_format($amountOriginal, 2); ?>
-			</td>
-			<td width="1%"></td>
-		</tr>
-		<tr>
-			<td class="label"><?php echo wc_help_tip( __( 'This is the transaction fee. transaction fee are defined per line item.', 'woocommerce' ) ); ?> <?php _e( 'Transaction Fee', 'woocommerce' ); ?>:</td>
-			<td class="total">
-				<?php echo $currency.number_format($fee, 2); ?>
-			</td>
-			<td width="1%"></td>
-		</tr>
-		<?php if($productCode == 'CREDITCARD'){?>
-			<tr>
-				<td class="label"><?php echo wc_help_tip( __( 'This is the merchant disc rate. merchant disc rate are defined per line item.', 'woocommerce' ) ); ?> <?php _e( 'Merchant Discount Rate', 'woocommerce' ); ?>:</td>
-				<td class="total">
-					<?php echo $creditcardfee.'%'; ?>
-				</td>
-				<td width="1%"></td>
-			</tr>
-		<?php }?>	
-		<tr>
-			<td class="label"><?php echo wc_help_tip( __( 'This is the total amount. total amount are defined per line item.', 'woocommerce' ) ); ?> <?php _e( 'Total Amount', 'woocommerce' ); ?>:</td>
-			<td class="total">
-				<?php echo $currency.number_format($totalamount, 2); ?>
-			</td>
-			<td width="1%"></td>
-		</tr>
-		<?php 
-	}
-    
-	 function myaccount_view_order ( $order_id ) {
-			global $woocommerce, $wpdb;
-		    $order = new WC_Order($order_id);
-		    $order_id = trim(str_replace('#', '', $order->get_order_number()));
-		    $currency = get_woocommerce_currency_symbol();
-		    
-		    $sql = "SELECT * 
-			FROM wp_postmeta
+            $amount = $amountOri;
+            $totalamount = ($amount + $fee) - $fee;
+        }
+        ?>
+        <tr>
+            <td class="label"></td>
+            <td class="total">
+                &nbsp;
+            </td>
+            <td width="1%"></td>
+        </tr>
+
+        <tr>
+            <td class="label"><?php _e('Subtotal', 'woocommerce'); ?>:</td>
+            <td class="total">
+        <?php echo $currency . number_format($amountOriginal, 2); ?>
+            </td>
+            <td width="1%"></td>
+        </tr>
+        <tr>
+            <td class="label"><?php echo wc_help_tip(__('This is the transaction fee. transaction fee are defined per line item.', 'woocommerce')); ?> <?php _e('Transaction Fee', 'woocommerce'); ?>:</td>
+            <td class="total">
+        <?php echo $currency . number_format($fee, 2); ?>
+            </td>
+            <td width="1%"></td>
+        </tr>
+        <?php if ($productCode == 'CREDITCARD') { ?>
+            <tr>
+                <td class="label"><?php echo wc_help_tip(__('This is the merchant disc rate. merchant disc rate are defined per line item.', 'woocommerce')); ?> <?php _e('Merchant Discount Rate', 'woocommerce'); ?>:</td>
+                <td class="total">
+            <?php echo $creditcardfee . '%'; ?>
+                </td>
+                <td width="1%"></td>
+            </tr>
+        <?php } ?>	
+        <tr>
+            <td class="label"><?php echo wc_help_tip(__('This is the total amount. total amount are defined per line item.', 'woocommerce')); ?> <?php _e('Total Amount', 'woocommerce'); ?>:</td>
+            <td class="total">
+        <?php echo $currency . number_format($totalamount, 2); ?>
+            </td>
+            <td width="1%"></td>
+        </tr>
+        <?php
+    }
+
+    function myaccount_view_order($order_id) {
+        global $woocommerce, $wpdb;
+        $order = new WC_Order($order_id);
+        $order_id = trim(str_replace('#', '', $order->get_order_number()));
+        $currency = get_woocommerce_currency_symbol();
+
+        $prefix = $wpdb->prefix;
+
+        $sql = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_total')
+			{$prefix}postmeta.meta_key in('_order_total')
 			";
-//			wp_postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay')
-			//wp_postmeta.meta_key = '".$meta_key."'
-			$results = $wpdb->get_results( $sql); 
-			
-			$sql1 = "SELECT * 
-			FROM wp_postmeta
+//			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay')
+        //{$prefix}postmeta.meta_key = '".$meta_key."'
+        $results = $wpdb->get_results($sql);
+
+        $sql1 = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_fee_espay')
+			{$prefix}postmeta.meta_key in('_order_fee_espay')
 			";
-			$results1 = $wpdb->get_results( $sql1);
-			
-			$sql2 = "SELECT * 
-			FROM wp_postmeta
+        $results1 = $wpdb->get_results($sql1);
+
+        $sql2 = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_creditcardfee_espay')
+			{$prefix}postmeta.meta_key in('_order_creditcardfee_espay')
 			";
-			$results2 = $wpdb->get_results( $sql2);
-			
-			$sql3 = "SELECT * 
-			FROM wp_postmeta
+        $results2 = $wpdb->get_results($sql2);
+
+        $sql3 = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_productcode_espay')
+			{$prefix}postmeta.meta_key in('_order_productcode_espay')
 			";
-			$results3 = $wpdb->get_results( $sql3);
-			
+        $results3 = $wpdb->get_results($sql3);
+
 //			echo'<pre>';
 //			var_dump($results3);
 //			echo'</pre>';
-			$amountOri = $results[0]->meta_value;
-		    
-			$productCode = $results3[0]->meta_value;
-			$feeOri = $results1[0]->meta_value;
-			$creditcardfeeOri = $results2[0]->meta_value;
-			
-	     	if($productCode == 'CREDITCARD'){
-        		$fee = ($feeOri == '')?0:$feeOri;
-        		$creditcardfee = ($creditcardfeeOri == '')?0:$creditcardfeeOri;
+        $amountOri = $results[0]->meta_value;
+
+        $productCode = $results3[0]->meta_value;
+        $feeOri = $results1[0]->meta_value;
+        $creditcardfeeOri = $results2[0]->meta_value;
+
+        if ($productCode == 'CREDITCARD') {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = ($creditcardfeeOri == '') ? 0 : $creditcardfeeOri;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
 //        		rumus
-	            $amount = $amountOri; 	
-        	    $totalamount = $amount; //disc rate
-        	}
-        	else{
-	        	$fee = ($feeOri == '')?0:$feeOri;
-	        	$creditcardfee = 0;
+            $amount = $amountOri;
+            $totalamount = $amount; //disc rate
+        } else {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = 0;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
-		        $amount = $amountOri;
-        		$totalamount = ($amount+$fee) - $fee;
-        	}
-			
-		    ?>
-		    <h2>Additional Information</h2>
-		    	
-		    <table class="shop_table order_details">
-				<tbody>
-					
-				</tbody>
-				<tfoot>
-						<tr>
-							<th scope="row">Transaction Fee</th>
-							<td><?php echo $currency.number_format($fee, 2); ?></td>
-						</tr>
-				<?php if($productCode == 'CREDITCARD'){?>		
-						<tr>
-							<th scope="row">Merchant Discount Rate</th>
-							<td><?php echo $creditcardfee.'%'; ?></td>
-						</tr>
-				<?php }?>
-						<tr>
-							<th scope="row">Total Amount</th>
-							<td><?php echo $currency.number_format($totalamount, 2); ?></td>
-						</tr>
-				</tfoot>
-			</table>
-		    <?php 
-		}
-		
- 		function myaccount_view_order_text ( $order_id ) {
-			global $woocommerce, $wpdb;
-		    $order = new WC_Order($order_id);
-		    $order_id = trim(str_replace('#', '', $order->get_order_number()));
-		    $currency = get_woocommerce_currency_symbol();
-		    
-		    $sql = "SELECT * 
-			FROM wp_postmeta
+            $amount = $amountOri;
+            $totalamount = ($amount + $fee) - $fee;
+        }
+        ?>
+        <h2>Additional Information</h2>
+
+        <table class="shop_table order_details">
+            <tbody>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row">Transaction Fee</th>
+                    <td><?php echo $currency . number_format($fee, 2); ?></td>
+                </tr>
+        <?php if ($productCode == 'CREDITCARD') { ?>		
+                    <tr>
+                        <th scope="row">Merchant Discount Rate</th>
+                        <td><?php echo $creditcardfee . '%'; ?></td>
+                    </tr>
+        <?php } ?>
+                <tr>
+                    <th scope="row">Total Amount</th>
+                    <td><?php echo $currency . number_format($totalamount, 2); ?></td>
+                </tr>
+            </tfoot>
+        </table>
+        <?php
+    }
+
+    function myaccount_view_order_text($order_id) {
+        global $woocommerce, $wpdb;
+
+        $prefix = $wpdb->prefix;
+
+        $order = new WC_Order($order_id);
+        $order_id = trim(str_replace('#', '', $order->get_order_number()));
+        $currency = get_woocommerce_currency_symbol();
+
+        $sql = "SELECT * 
+			FROM {$prefix}postmeta
 			where 
-			wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			wp_postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_payment_method_title')
+			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_payment_method_title')
 			";
-			//wp_postmeta.meta_key = '".$meta_key."'
-			$results = $wpdb->get_results( $sql); 
+        //{$prefix}postmeta.meta_key = '".$meta_key."'
+        $results = $wpdb->get_results($sql);
 //			echo'<pre>';
 //			var_dump($results);
 //			echo'</pre>';
-			
-			$paymentmethod = $results[0]->meta_value;
-			$amountOri = $results[1]->meta_value;
-		    $productCode = $results[2]->meta_value;
-			$feeOri = $results[3]->meta_value;
-			$creditcardfeeOri = $results[4]->meta_value;
-			
-	     	if($productCode == 'CREDITCARD'){
-        		$fee = ($feeOri == '')?0:$feeOri;
-        		$creditcardfee = ($creditcardfeeOri == '')?0:$creditcardfeeOri;
+
+        $paymentmethod = $results[0]->meta_value;
+        $amountOri = $results[1]->meta_value;
+        $productCode = $results[2]->meta_value;
+        $feeOri = $results[3]->meta_value;
+        $creditcardfeeOri = $results[4]->meta_value;
+
+        if ($productCode == 'CREDITCARD') {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = ($creditcardfeeOri == '') ? 0 : $creditcardfeeOri;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
 //        		rumus
 //				(total * settingbackend%) + setting backend fee
-	            $amount = $amountOri; 	
-		        
-		        $amountcredit = $amount + $fee;
-	            $amountFinish =  (($amountcredit * $creditcardfee)/100) + $fee;
-		        $totalamount = $amount + $amountFinish; //disc rate
-        	}
-        	else{
-	        	$fee = ($feeOri == '')?0:$feeOri;
-	        	$creditcardfee = 0;
+            $amount = $amountOri;
+
+            $amountcredit = $amount + $fee;
+            $amountFinish = (($amountcredit * $creditcardfee) / 100) + $fee;
+            $totalamount = $amount + $amountFinish; //disc rate
+        } else {
+            $fee = ($feeOri == '') ? 0 : $feeOri;
+            $creditcardfee = 0;
 //	        	$amount = WC()->cart->cart_contents_total; //ori angka
-		        $amount = $amountOri;
-	        	$totalamount = $amount+$fee;
-        	}
-			$statusOrder = wc_get_order_status_name( $order->get_status() );			
-		    ?>
-		    <?php if($statusOrder == 'Processing'){?>
-			    <p class="order-info">
-				  Terima Kasih telah belanja di toko kami,
-				  kami akan segera memproses pesanan Anda dan mengatur pengiriman pesanan. 
-				  <br><br>
-				</p>
-		    <?php 
-		    }
-		    elseif($statusOrder == 'Completed'){
-		    ?>
-		        <p class="order-info">
-				  Great news! Order kamu #<font color='blue'><?=$order_id?></font> sudah dikirim, dan akan tiba sesuai dengan estimasi pengiriman.
-				  <br><br>
-				</p>
-		    
-		    <?php 
-		    }
-		}
-		
-		
-	add_action( 'woocommerce_order_items_table', 'myaccount_view_order_text' );
-		
-	add_action( 'woocommerce_order_details_after_order_table', 'myaccount_view_order' );
-	add_action( 'woocommerce_admin_order_totals_after_total', 'myaccount_view_order_admin' );
-	
-		
+            $amount = $amountOri;
+            $totalamount = $amount + $fee;
+        }
+        $statusOrder = wc_get_order_status_name($order->get_status());
+        ?>
+        <?php if ($statusOrder == 'Processing') { ?>
+            <p class="order-info">
+                Terima Kasih telah belanja di toko kami,
+                kami akan segera memproses pesanan Anda dan mengatur pengiriman pesanan. 
+                <br><br>
+            </p>
+            <?php
+        } elseif ($statusOrder == 'Completed') {
+            ?>
+            <p class="order-info">
+                Great news! Order kamu #<font color='blue'><?= $order_id ?></font> sudah dikirim, dan akan tiba sesuai dengan estimasi pengiriman.
+                <br><br>
+            </p>
+
+            <?php
+        }
+    }
+
+    add_action('woocommerce_order_items_table', 'myaccount_view_order_text');
+
+    add_action('woocommerce_order_details_after_order_table', 'myaccount_view_order');
+    add_action('woocommerce_admin_order_totals_after_total', 'myaccount_view_order_admin');
+
+
     add_filter('woocommerce_payment_gateways', 'add_espay_gateway');
-} 
+}

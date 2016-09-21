@@ -3,6 +3,8 @@ require_once('../../../wp-config.php');
 //require_once('index.php');
 global $wpdb;
 
+$prefix = $wpdb->prefix;
+
 $wo = new WC_Gateway_eSpay;
 $passwordAdmin = $wo->password();
 $creditcardfee = $wo->creditcardfee();
@@ -22,86 +24,86 @@ $signatureKeyRest = hash('sha256', $uppercase);
 $meta_key = '_order_total';
 $meta_key_curr = '_order_currency';
 
-$sql = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_currency')
+{$prefix}postmeta.meta_key in('_order_currency')
 ";
 $results = $wpdb->get_results( $sql); 
 
-$sql1 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql1 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_total')
+{$prefix}postmeta.meta_key in('_order_total')
 ";
 $results1 = $wpdb->get_results( $sql1); 
 
-$sql2 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql2 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_productcode_espay')
+{$prefix}postmeta.meta_key in('_order_productcode_espay')
 ";
 $results2 = $wpdb->get_results( $sql2); 
 
-$sql3 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql3 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_creditcardfee_espay')
+{$prefix}postmeta.meta_key in('_order_creditcardfee_espay')
 ";
 $results3 = $wpdb->get_results( $sql3); 
 
-$sql4 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql4 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_fee_espay')
+{$prefix}postmeta.meta_key in('_order_fee_espay')
 ";
 $results4 = $wpdb->get_results( $sql4); 
 
-$sql5 = "SELECT wp_woocommerce_order_items.order_id, wp_posts.ID, wp_posts.post_status, wp_posts.post_date, wp_postmeta.post_id, wp_postmeta.meta_key, wp_postmeta.meta_value
-FROM wp_woocommerce_order_items
-JOIN wp_posts ON wp_woocommerce_order_items.order_id=wp_posts.ID
-JOIN wp_postmeta ON wp_woocommerce_order_items.order_id=wp_postmeta.post_id
+$sql5 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
+FROM {$prefix}woocommerce_order_items
+JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
+JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
 where 
-wp_woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}woocommerce_order_items.order_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
+{$prefix}postmeta.post_id = '".mysql_real_escape_string($order_id)."' 
 and 
-wp_postmeta.meta_key in('_order_total_ori')
+{$prefix}postmeta.meta_key in('_order_total_ori')
 ";
 $results5 = $wpdb->get_results( $sql5); 
 
-//wp_postmeta.meta_key = '".$meta_key."'
-//wp_postmeta.meta_key in('_order_currency','_order_total','_order_productcode_espay','_order_creditcardfee_espay','_order_fee_espay','_order_total_ori')
+//{$prefix}postmeta.meta_key = '".$meta_key."'
+//{$prefix}postmeta.meta_key in('_order_currency','_order_total','_order_productcode_espay','_order_creditcardfee_espay','_order_fee_espay','_order_total_ori')
 
 //echo'<pre>';
 //var_dump($results5);
