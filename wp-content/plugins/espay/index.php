@@ -436,20 +436,19 @@ function woocommerce_espay_init() {
                 $valJsonPost->productName;
                 ?>
 
-                <!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>-->
+                                <!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>-->
                 <label for="espayproduct-<?= $valJsonPost->productCode; ?>" style="display: inline;"> 
-                    <?//=$valJsonPost->productName?>
-                <?php
+                    <?php
 //					$src = "https://secure.sgo.co.id/images/products/".$valJsonPost->productCode.".png";
 //					echo '<img src="' .$src.'" alt="' . esc_attr__('', 'woocommerce' ) . '" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-right: 10px;" />';
 //					echo 'Payment using '.$valJsonPost->productName ;
-                ?>
+                    ?>
                     <input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>
-                <?php
-                echo'
+                    <?php
+                    echo'
 				   		<img align="middle" src="https://secure.sgo.co.id/images/products/' . $valJsonPost->productCode . '.png" width="100" height="90" style="border-radius:30px;background:#7dd4e1;padding:15px;border:4px solid #fff;"/>
 						Payment Using ' . $valJsonPost->productName . '';
-                ?>
+                    ?>
 
                 </label></p>
                 <?php
@@ -539,7 +538,7 @@ function woocommerce_espay_init() {
 //            global $woocommerce;
             global $woo_cp, $woocommerce, $wpdb;
 
-            $prefix = $wpdb->prefix;
+            $_prefix = $wpdb->prefix;
 
             $order = new WC_Order($order_id);
 
@@ -566,14 +565,16 @@ function woocommerce_espay_init() {
             $redirect = $urlsite . $urlplugin;
 //        	http://116.90.162.173:17122/wordpress-4.4.2/wp-content/plugins/espay-sgo/notif.php?order=20#
 
+            $_order_id_get = mysql_escape_string($order_id_get);
+
             $sql = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id_get) . "' 
+			{$_prefix}postmeta.post_id = '" . $_order_id_get . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_total','_order_total_ori')
+			{$_prefix}postmeta.meta_key in('_order_total','_order_total_ori')
 			";
-            //{$prefix}postmeta.meta_key = '".$meta_key."'
+            //{$_prefix}postmeta.meta_key = '".$meta_key."'
             $results = $wpdb->get_results($sql);
             ?> 
             <?php
@@ -699,14 +700,14 @@ function woocommerce_espay_init() {
                         <td><?php echo $currency . number_format($fee, 2); ?></td>
                     </tr>
 
-            <?php
-            if ($productCode == 'CREDITCARD') {
-                ?>
+                    <?php
+                    if ($productCode == 'CREDITCARD') {
+                        ?>
                         <tr>
                             <th scope="row">Merchant Discount Rate</th>
                             <td><?php echo $creditcardfee . '%'; ?></td>
                         </tr>
-            <?php } ?>	
+                    <?php } ?>	
 
                     <tr>
                         <th scope="row">Total Amount</th>
@@ -731,7 +732,7 @@ function woocommerce_espay_init() {
                 <?php
             } else {
                 ?>
-                <form method="POST" action="<?php //echo $this->payurl; ?>">
+                <form method="POST" action="<?php //echo $this->payurl;  ?>">
                     <input type="hidden" name="method" value="<?php echo $method; ?>" />
                     <input type="hidden" name="merchantUUID" value="<?php echo $this->settings['merchant_id']; ?>" />
                     <input type="submit" name="post" class="submit buy button" value="<?php _e('Confirm and Pay', 'woocommerce'); ?>" />
@@ -748,33 +749,33 @@ function woocommerce_espay_init() {
                 $order_creditcardfee_espay = '_order_creditcardfee_espay';
                 $order_total_ori = '_order_total_ori';
 
-                $wpdb->query($wpdb->prepare("UPDATE {$prefix}postmeta SET meta_value='" . $payment_method_title . "' WHERE post_id='" . $order_id_get . "' and meta_key='_payment_method_title'"));
-                $wpdb->query($wpdb->prepare("UPDATE {$prefix}postmeta SET meta_value='" . $totalamount . '.00' . "' WHERE post_id='" . $order_id_get . "' and meta_key='_order_total'"));
+                $wpdb->query($wpdb->prepare("UPDATE {$_prefix}postmeta SET meta_value='" . $payment_method_title . "' WHERE post_id='" . $order_id_get . "' and meta_key='_payment_method_title'"));
+                $wpdb->query($wpdb->prepare("UPDATE {$_prefix}postmeta SET meta_value='" . $totalamount . '.00' . "' WHERE post_id='" . $order_id_get . "' and meta_key='_order_total'"));
 
                 if ($productCode == 'CREDITCARD') {
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
                 } else {
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_productcode_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_productcode_espay . "', '" . $productCode . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_fee_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_fee_espay . "', '" . $fee . '.00' . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_creditcardfee_espay . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_creditcardfee_espay . "', '" . $creditcardfee . '.00' . "')");
 
-                    $wpdb->query("DELETE FROM {$prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
-                    $wpdb->query("INSERT INTO {$prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
+                    $wpdb->query("DELETE FROM {$_prefix}postmeta where post_id='" . $order_id_get . "' and meta_key= '" . $order_total_ori . "'");
+                    $wpdb->query("INSERT INTO {$_prefix}postmeta (post_id, meta_key, meta_value) VALUES ('" . $order_id_get . "', '" . $order_total_ori . "', '" . $amount . "')");
                 }
 
                 $wpdb->flush();
@@ -817,20 +818,19 @@ function woocommerce_espay_init() {
 
     function myaccount_view_order_admin($order_id) {
         global $woocommerce, $wpdb;
+        $_prefix = $wpdb->prefix;
         $order = new WC_Order($order_id);
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
-        $prefix = $wpdb->prefix;
-
         $sql = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_order_total_ori')
+			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_order_total_ori')
 			";
-        //{$prefix}postmeta.meta_key = '".$meta_key."'
+        //{$_prefix}postmeta.meta_key = '".$meta_key."'
         $results = $wpdb->get_results($sql);
 //			echo'<pre>';
 //			var_dump($results);
@@ -865,14 +865,14 @@ function woocommerce_espay_init() {
         <tr>
             <td class="label"><?php _e('Subtotal', 'woocommerce'); ?>:</td>
             <td class="total">
-        <?php echo $currency . number_format($amountOriginal, 2); ?>
+                <?php echo $currency . number_format($amountOriginal, 2); ?>
             </td>
             <td width="1%"></td>
         </tr>
         <tr>
             <td class="label"><?php echo wc_help_tip(__('This is the transaction fee. transaction fee are defined per line item.', 'woocommerce')); ?> <?php _e('Transaction Fee', 'woocommerce'); ?>:</td>
             <td class="total">
-        <?php echo $currency . number_format($fee, 2); ?>
+                <?php echo $currency . number_format($fee, 2); ?>
             </td>
             <td width="1%"></td>
         </tr>
@@ -880,7 +880,7 @@ function woocommerce_espay_init() {
             <tr>
                 <td class="label"><?php echo wc_help_tip(__('This is the merchant disc rate. merchant disc rate are defined per line item.', 'woocommerce')); ?> <?php _e('Merchant Discount Rate', 'woocommerce'); ?>:</td>
                 <td class="total">
-            <?php echo $creditcardfee . '%'; ?>
+                    <?php echo $creditcardfee . '%'; ?>
                 </td>
                 <td width="1%"></td>
             </tr>
@@ -888,7 +888,7 @@ function woocommerce_espay_init() {
         <tr>
             <td class="label"><?php echo wc_help_tip(__('This is the total amount. total amount are defined per line item.', 'woocommerce')); ?> <?php _e('Total Amount', 'woocommerce'); ?>:</td>
             <td class="total">
-        <?php echo $currency . number_format($totalamount, 2); ?>
+                <?php echo $currency . number_format($totalamount, 2); ?>
             </td>
             <td width="1%"></td>
         </tr>
@@ -897,47 +897,46 @@ function woocommerce_espay_init() {
 
     function myaccount_view_order($order_id) {
         global $woocommerce, $wpdb;
+        $_prefix = $wpdb->prefix;
         $order = new WC_Order($order_id);
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
-        $prefix = $wpdb->prefix;
-
         $sql = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_total')
+			{$_prefix}postmeta.meta_key in('_order_total')
 			";
-//			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay')
-        //{$prefix}postmeta.meta_key = '".$meta_key."'
+//			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay')
+        //{$_prefix}postmeta.meta_key = '".$meta_key."'
         $results = $wpdb->get_results($sql);
 
         $sql1 = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_fee_espay')
+			{$_prefix}postmeta.meta_key in('_order_fee_espay')
 			";
         $results1 = $wpdb->get_results($sql1);
 
         $sql2 = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_creditcardfee_espay')
+			{$_prefix}postmeta.meta_key in('_order_creditcardfee_espay')
 			";
         $results2 = $wpdb->get_results($sql2);
 
         $sql3 = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_productcode_espay')
+			{$_prefix}postmeta.meta_key in('_order_productcode_espay')
 			";
         $results3 = $wpdb->get_results($sql3);
 
@@ -976,12 +975,12 @@ function woocommerce_espay_init() {
                     <th scope="row">Transaction Fee</th>
                     <td><?php echo $currency . number_format($fee, 2); ?></td>
                 </tr>
-        <?php if ($productCode == 'CREDITCARD') { ?>		
+                <?php if ($productCode == 'CREDITCARD') { ?>		
                     <tr>
                         <th scope="row">Merchant Discount Rate</th>
                         <td><?php echo $creditcardfee . '%'; ?></td>
                     </tr>
-        <?php } ?>
+                <?php } ?>
                 <tr>
                     <th scope="row">Total Amount</th>
                     <td><?php echo $currency . number_format($totalamount, 2); ?></td>
@@ -993,21 +992,19 @@ function woocommerce_espay_init() {
 
     function myaccount_view_order_text($order_id) {
         global $woocommerce, $wpdb;
-
-        $prefix = $wpdb->prefix;
-
+        $_prefix = $wpdb->prefix;
         $order = new WC_Order($order_id);
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
         $sql = "SELECT * 
-			FROM {$prefix}postmeta
+			FROM {$_prefix}postmeta
 			where 
-			{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
 			and 
-			{$prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_payment_method_title')
+			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_payment_method_title')
 			";
-        //{$prefix}postmeta.meta_key = '".$meta_key."'
+        //{$_prefix}postmeta.meta_key = '".$meta_key."'
         $results = $wpdb->get_results($sql);
 //			echo'<pre>';
 //			var_dump($results);

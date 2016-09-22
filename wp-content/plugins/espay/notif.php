@@ -2,7 +2,8 @@
 require_once('../../../wp-config.php');
 
 global $wpdb;
-$prefix = $wpdb->prefix;
+
+$_prefix = $wpdb->prefix;
 
 $wo = new WC_Gateway_eSpay;
 $passwordAdmin = $wo->password();
@@ -17,21 +18,21 @@ $order_id = (!empty($_REQUEST['order'])?$_REQUEST['order']:'');
 $meta_key = '_order_total';
 $meta_key_curr = '_order_currency';
 
-$sql = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}posts.post_password, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
-FROM {$prefix}woocommerce_order_items
-JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
-JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
+$sql = "SELECT {$_prefix}woocommerce_order_items.order_id, {$_prefix}posts.ID, {$_prefix}posts.post_status, {$_prefix}posts.post_date, {$_prefix}posts.post_password, {$_prefix}postmeta.post_id, {$_prefix}postmeta.meta_key, {$_prefix}postmeta.meta_value
+FROM {$_prefix}woocommerce_order_items
+JOIN {$_prefix}posts ON {$_prefix}woocommerce_order_items.order_id={$_prefix}posts.ID
+JOIN {$_prefix}postmeta ON {$_prefix}woocommerce_order_items.order_id={$_prefix}postmeta.post_id
 where 
-{$prefix}woocommerce_order_items.order_id = '".$order_id."' 
+{$_prefix}woocommerce_order_items.order_id = '".$order_id."' 
 and 
-{$prefix}postmeta.post_id = '".$order_id."' 
+{$_prefix}postmeta.post_id = '".$order_id."' 
 and 
-{$prefix}postmeta.meta_key = '".$meta_key."'
+{$_prefix}postmeta.meta_key = '".$meta_key."'
 ";
 //and
-//{$prefix}postmeta.meta_value = '".$amt."'
-//{$prefix}postmeta.meta_key = '".$meta_key."'
-//{$prefix}postmeta.meta_key in('_order_currency','_order_total')
+//{$_prefix}postmeta.meta_value = '".$amt."'
+//{$_prefix}postmeta.meta_key = '".$meta_key."'
+//{$_prefix}postmeta.meta_key in('_order_currency','_order_total')
 
 $results = $wpdb->get_results( $sql); 
 //echo'<pre>';

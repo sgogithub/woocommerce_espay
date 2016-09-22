@@ -1,11 +1,11 @@
 <?php
 
 require_once('../../../wp-config.php');
-ini_set('display_errors', false);
-error_reporting(0);
+ini_set( 'display_errors', false );
+error_reporting( 0 );
 global $wpdb, $woocommerce;
 
-$prefix = $wpdb->prefix;
+$_prefix = $wpdb->prefix;
 
 $wo = new WC_Gateway_eSpay;
 $passwordAdmin = $wo->password();
@@ -29,36 +29,38 @@ $signatureKeyRest = hash('sha256', $uppercase);
 $meta_key = '_order_total';
 $meta_key_curr = '_order_currency';
 
-$sql = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}posts.post_password, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
-FROM {$prefix}woocommerce_order_items
-JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
-JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
+$_order_id = mysql_escape_string($order_id);
+
+$sql = "SELECT {$_prefix}woocommerce_order_items.order_id, {$_prefix}posts.ID, {$_prefix}posts.post_status, {$_prefix}posts.post_date, {$_prefix}posts.post_password, {$_prefix}postmeta.post_id, {$_prefix}postmeta.meta_key, {$_prefix}postmeta.meta_value
+FROM {$_prefix}woocommerce_order_items
+JOIN {$_prefix}posts ON {$_prefix}woocommerce_order_items.order_id={$_prefix}posts.ID
+JOIN {$_prefix}postmeta ON {$_prefix}woocommerce_order_items.order_id={$_prefix}postmeta.post_id
 where 
-{$prefix}woocommerce_order_items.order_id = '" . mysql_real_escape_string($order_id) . "' 
+{$_prefix}woocommerce_order_items.order_id = '" . $_order_id . "' 
 and 
-{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+{$_prefix}postmeta.post_id = '" . $_order_id . "' 
 and 
-{$prefix}postmeta.meta_key in('_payment_method_title')
+{$_prefix}postmeta.meta_key in('_payment_method_title')
 ";
 $results = $wpdb->get_results($sql);
 
-$sql1 = "SELECT {$prefix}woocommerce_order_items.order_id, {$prefix}posts.ID, {$prefix}posts.post_status, {$prefix}posts.post_date, {$prefix}posts.post_password, {$prefix}postmeta.post_id, {$prefix}postmeta.meta_key, {$prefix}postmeta.meta_value
-FROM {$prefix}woocommerce_order_items
-JOIN {$prefix}posts ON {$prefix}woocommerce_order_items.order_id={$prefix}posts.ID
-JOIN {$prefix}postmeta ON {$prefix}woocommerce_order_items.order_id={$prefix}postmeta.post_id
+$sql1 = "SELECT {$_prefix}woocommerce_order_items.order_id, {$_prefix}posts.ID, {$_prefix}posts.post_status, {$_prefix}posts.post_date, {$_prefix}posts.post_password, {$_prefix}postmeta.post_id, {$_prefix}postmeta.meta_key, {$_prefix}postmeta.meta_value
+FROM {$_prefix}woocommerce_order_items
+JOIN {$_prefix}posts ON {$_prefix}woocommerce_order_items.order_id={$_prefix}posts.ID
+JOIN {$_prefix}postmeta ON {$_prefix}woocommerce_order_items.order_id={$_prefix}postmeta.post_id
 where 
-{$prefix}woocommerce_order_items.order_id = '" . mysql_real_escape_string($order_id) . "' 
+{$_prefix}woocommerce_order_items.order_id = '" . $_order_id . "' 
 and 
-{$prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
+{$_prefix}postmeta.post_id = '" . $_order_id . "' 
 and 
-{$prefix}postmeta.meta_key in('_order_total')
+{$_prefix}postmeta.meta_key in('_order_total')
 ";
 $results1 = $wpdb->get_results($sql1);
 
 //and
-//{$prefix}postmeta.meta_value = '".$amt."'
-//{$prefix}postmeta.meta_key = '".$meta_key."'
-//{$prefix}postmeta.meta_key in('_payment_method_title','_order_total')
+//{$_prefix}postmeta.meta_value = '".$amt."'
+//{$_prefix}postmeta.meta_key = '".$meta_key."'
+//{$_prefix}postmeta.meta_key in('_payment_method_title','_order_total')
 //echo'<pre>';
 //var_dump($results);
 //echo'</pre>';
@@ -98,8 +100,15 @@ if ($passwordAdmin != $passwordServer) {
                 $orderWc->payment_complete();
 
                 //	         $payment_method_title = 'ESPay Payment Gateways - '.$product_code; 
-                //	         $wpdb->query($wpdb->prepare("UPDATE {$prefix}postmeta SET meta_value='".$payment_method_title."' WHERE post_id='".$order_id_ori."' and meta_key='_payment_method_title'"));
-                $wpdb->query($wpdb->prepare("update {$prefix}postmeta set meta_value = replace(meta_value,'" . $paymentMethod . "','" . $paymentMethodReplace . "') where post_id = '" . $order_id_ori . "' and meta_key='_payment_method_title'"));
+                //	         $wpdb->query($wpdb->prepare("UPDATE {$_prefix}postmeta SET meta_value='".$payment_method_title."' WHERE post_id='".$order_id_ori."' and meta_key='_payment_method_title'"));
+
+                $_paymentMethod = mysql_escape_string($paymentMethod);
+                $_paymentMethodReplace = mysql_escape_string($paymentMethodReplace);
+                $_order_id_ori = mysql_escape_string($order_id_ori);
+
+                $sql_prepare = $wpdb->prepare("update {$_prefix}postmeta set meta_value = replace(meta_value,'" . $_paymentMethod . "','" . $_paymentMethodReplace . "') where post_id = '" . $_order_id_ori . "' and meta_key='_payment_method_title'");
+
+                $wpdb->query($sql_prepare);
                 $wpdb->flush();
 
                 //			 $orderWc->update_status('completed', __( 'Order Completed', 'woocommerce' ));
