@@ -386,7 +386,7 @@ function woocommerce_espay_init() {
         }
         
 	    private function callApiProduct(){
-	    	$url =   $this->environment == 'production'? 'https://116.90.162.172:812/rest/merchant/merchantinfo' : 'http://116.90.162.170:10809/rest/merchant/merchantinfo';
+	    	$url =   $this->environment == 'production'? 'https://api.espay.id/rest/merchant/merchantinfo' : 'https://sandbox-api.espay.id/rest/merchant/merchantinfo';
 //	        $url = 'http://116.90.162.170:10809/rest/merchant/merchantinfo';  
 //	        $key =   Mage::getStoreConfig('payment/espay/paymentid');
 	        $key = $this->apikey;//'7ea1d02c9fab152d9c82c9415870b876';  
