@@ -41,11 +41,11 @@ function woocommerce_espay_init() {
             // Define user set variables
 
             $this->enabled = $this->settings['enabled'];
-//            
-//            $espayproductOri = WC()->session->get( 'espayproduct' ); 
+//
+//            $espayproductOri = WC()->session->get( 'espayproduct' );
 //			$espayproduct = stripslashes($espayproductOri);
 //			$valJsonPost1 = json_decode($espayproduct);
-//        	
+//
 //			$this->productNameP = $productName1 = ' - '.$valJsonPost1->productName;
 //			$this->title        = "ESPay Payment Gateways". $this->productNameP;
             $this->title = "ESPay Payment Gateways";
@@ -91,8 +91,8 @@ function woocommerce_espay_init() {
 
 //            $this->bankmayapada       = $this->get_option( 'bankmayapada' );
 //		    $this->bankdki       = $this->get_option( 'bankdki' );
-//		    define("BANK_MAYAPADA", ($this->bankmayapada=='yes'? false : true)); 
-//		    define("BANK_DKI", ($this->bankdki=='yes'? false : true)); 
+//		    define("BANK_MAYAPADA", ($this->bankmayapada=='yes'? false : true));
+//		    define("BANK_DKI", ($this->bankdki=='yes'? false : true));
             // Actions
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
             add_action('woocommerce_receipt_espay', array(&$this, 'receipt_page'));
@@ -102,18 +102,18 @@ function woocommerce_espay_init() {
         }
 
 //		function my_custom_checkout_field( $checkout ) {
-//		
+//
 //			echo '<div id="my_custom_checkout_field"><h3>'.__('Test Agung').'</h3>';
-//			
+//
 //			woocommerce_form_field( 'my_field_name', array(
 //			'type' => 'text',
 //			'class' => array('my-field-class form-row-wide'),
 //			'placeholder' => __('Enter your Trade Account Number'),
 //			), $checkout->get_value( 'my_field_name' ));
-//			
+//
 ////			woocommerce_form_field( $key, $field, $checkout->get_value( $key ) );
 //			echo '</div>';
-//		
+//
 //		}
 
         function init_form_fields() {
@@ -145,9 +145,9 @@ function woocommerce_espay_init() {
                     'default' => ''
                 ),
 //                'ipaddress' => array(
-//                                'title' => __( 'Payment Ip Address', 'woothemes' ), 
-//                                'type' => 'text', 
-//                                  'description' => __( ' ', 'woothemes' ), 
+//                                'title' => __( 'Payment Ip Address', 'woothemes' ),
+//                                'type' => 'text',
+//                                  'description' => __( ' ', 'woothemes' ),
 //                                'default' => ''
 //                            ),
                 'paymentpassword' => array(
@@ -372,10 +372,10 @@ function woocommerce_espay_init() {
         }
 
         private function callApiProduct() {
-            $url = $this->environment == 'production' ? 'https://116.90.162.172:812/rest/merchant/merchantinfo' : 'http://116.90.162.170:10809/rest/merchant/merchantinfo';
-//	        $url = 'http://116.90.162.170:10809/rest/merchant/merchantinfo';  
+            $url = $this->environment == 'production' ? 'https://api.espay.id/rest/merchant/merchantinfo' : 'https:/sandbox-api.espay.id/rest/merchant/merchantinfo';
+//	        $url = 'http://116.90.162.170:10809/rest/merchant/merchantinfo';
 //	        $key =   Mage::getStoreConfig('payment/espay/paymentid');
-            $key = $this->apikey; //'7ea1d02c9fab152d9c82c9415870b876';  
+            $key = $this->apikey; //'7ea1d02c9fab152d9c82c9415870b876';
             $request = 'key=' . $key;
 
             $url = $curl = curl_init($url);
@@ -411,10 +411,10 @@ function woocommerce_espay_init() {
 
 //		function endo_handling_fee() {
 //		     global $woocommerce;
-//		 
+//
 //		     if ( is_admin() && ! defined( 'DOING_AJAX' ) )
 //		          return;
-//		 
+//
 ////		          $this -> current_gateway_extra_charges = 5;
 //		     $fee = 5.00;
 //		     $test = $woocommerce->cart->add_fee( 'Handling', $fee, true, 'standard' );
@@ -427,6 +427,11 @@ function woocommerce_espay_init() {
 //        	echo woocommerce_price($this -> current_gateway_extra_charges);
 
             echo'<h4><b>Online Payment</b></h4>';
+
+			if(empty($callApiProduct)){
+                echo 'There\'s something wrong here, please check your api key';
+            }else{
+
             foreach ($callApiProduct as $value) {
                 $valJson = json_encode($value);
                 $valJsonPost = json_decode($valJson);
@@ -437,7 +442,7 @@ function woocommerce_espay_init() {
                 ?>
 
                                 <!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>-->
-                <label for="espayproduct-<?= $valJsonPost->productCode; ?>" style="display: inline;"> 
+                <label for="espayproduct-<?= $valJsonPost->productCode; ?>" style="display: inline;">
                     <?php
 //					$src = "https://secure.sgo.co.id/images/products/".$valJsonPost->productCode.".png";
 //					echo '<img src="' .$src.'" alt="' . esc_attr__('', 'woocommerce' ) . '" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-right: 10px;" />';
@@ -452,6 +457,7 @@ function woocommerce_espay_init() {
 
                 </label></p>
                 <?php
+				}
             }
             ?>
             <div align=center>
@@ -488,7 +494,7 @@ function woocommerce_espay_init() {
 
             if ($this->apikey != '') { //sukses
 //					$order->reduce_order_stock();
-//					WC()->cart->empty_cart();	
+//					WC()->cart->empty_cart();
                 $order->add_order_note(__("Sedang menunggu konfirmasi dan pembayaran", 'woothemes'));
                 return array(
                     'result' => 'success',
@@ -567,16 +573,16 @@ function woocommerce_espay_init() {
 
             $_order_id_get = mysql_escape_string($order_id_get);
 
-            $sql = "SELECT * 
+            $sql = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . $_order_id_get . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . $_order_id_get . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_total','_order_total_ori')
 			";
             //{$_prefix}postmeta.meta_key = '".$meta_key."'
             $results = $wpdb->get_results($sql);
-            ?> 
+            ?>
             <?php
             if ($productCode == 'CREDITCARD') {
 
@@ -686,8 +692,8 @@ function woocommerce_espay_init() {
             ?>
             <table class="shop_table order_details">
                 <tbody>
-                <h2>Additional Information</h2>	
-                <hr>				
+                <h2>Additional Information</h2>
+                <hr>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -707,7 +713,7 @@ function woocommerce_espay_init() {
                             <th scope="row">Merchant Discount Rate</th>
                             <td><?php echo $creditcardfee . '%'; ?></td>
                         </tr>
-                    <?php } ?>	
+                    <?php } ?>
 
                     <tr>
                         <th scope="row">Total Amount</th>
@@ -823,11 +829,11 @@ function woocommerce_espay_init() {
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
-        $sql = "SELECT * 
+        $sql = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_order_total_ori')
 			";
         //{$_prefix}postmeta.meta_key = '".$meta_key."'
@@ -884,7 +890,7 @@ function woocommerce_espay_init() {
                 </td>
                 <td width="1%"></td>
             </tr>
-        <?php } ?>	
+        <?php } ?>
         <tr>
             <td class="label"><?php echo wc_help_tip(__('This is the total amount. total amount are defined per line item.', 'woocommerce')); ?> <?php _e('Total Amount', 'woocommerce'); ?>:</td>
             <td class="total">
@@ -902,40 +908,40 @@ function woocommerce_espay_init() {
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
-        $sql = "SELECT * 
+        $sql = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_total')
 			";
 //			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay')
         //{$_prefix}postmeta.meta_key = '".$meta_key."'
         $results = $wpdb->get_results($sql);
 
-        $sql1 = "SELECT * 
+        $sql1 = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_fee_espay')
 			";
         $results1 = $wpdb->get_results($sql1);
 
-        $sql2 = "SELECT * 
+        $sql2 = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_creditcardfee_espay')
 			";
         $results2 = $wpdb->get_results($sql2);
 
-        $sql3 = "SELECT * 
+        $sql3 = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_productcode_espay')
 			";
         $results3 = $wpdb->get_results($sql3);
@@ -975,7 +981,7 @@ function woocommerce_espay_init() {
                     <th scope="row">Transaction Fee</th>
                     <td><?php echo $currency . number_format($fee, 2); ?></td>
                 </tr>
-                <?php if ($productCode == 'CREDITCARD') { ?>		
+                <?php if ($productCode == 'CREDITCARD') { ?>
                     <tr>
                         <th scope="row">Merchant Discount Rate</th>
                         <td><?php echo $creditcardfee . '%'; ?></td>
@@ -997,11 +1003,11 @@ function woocommerce_espay_init() {
         $order_id = trim(str_replace('#', '', $order->get_order_number()));
         $currency = get_woocommerce_currency_symbol();
 
-        $sql = "SELECT * 
+        $sql = "SELECT *
 			FROM {$_prefix}postmeta
-			where 
-			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "' 
-			and 
+			where
+			{$_prefix}postmeta.post_id = '" . mysql_real_escape_string($order_id) . "'
+			and
 			{$_prefix}postmeta.meta_key in('_order_total','_order_productcode_espay','_order_fee_espay','_order_creditcardfee_espay','_payment_method_title')
 			";
         //{$_prefix}postmeta.meta_key = '".$meta_key."'
@@ -1039,7 +1045,7 @@ function woocommerce_espay_init() {
         <?php if ($statusOrder == 'Processing') { ?>
             <p class="order-info">
                 Terima Kasih telah belanja di toko kami,
-                kami akan segera memproses pesanan Anda dan mengatur pengiriman pesanan. 
+                kami akan segera memproses pesanan Anda dan mengatur pengiriman pesanan.
                 <br><br>
             </p>
             <?php
