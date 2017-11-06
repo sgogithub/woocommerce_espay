@@ -444,7 +444,7 @@ function woocommerce_espay_init() {
                                 <!--	        	<input type="radio" class="input-radio" name="espayproduct" id="espayproduct-<?= $valJsonPost->productCode; ?>" value='{"productName":"<?= $valJsonPost->productName ?>","bankCode":"<?= $valJsonPost->bankCode ?>","productCode":"<?= $valJsonPost->productCode ?>"}'>-->
                 <label for="espayproduct-<?= $valJsonPost->productCode; ?>" style="display: inline;">
                     <?php
-//					$src = "https://secure.sgo.co.id/images/products/".$valJsonPost->productCode.".png";
+//					$src = "https://kit.espay.id/images/products/".$valJsonPost->productCode.".png";
 //					echo '<img src="' .$src.'" alt="' . esc_attr__('', 'woocommerce' ) . '" height="' . esc_attr( $image_size[1] ) . '" width="' . esc_attr( $image_size[0] ) . '" style="vertical-align:middle; margin-right: 10px;" />';
 //					echo 'Payment using '.$valJsonPost->productName ;
                     ?>
@@ -789,8 +789,8 @@ function woocommerce_espay_init() {
                 $order->reduce_order_stock();
                 WC()->cart->empty_cart();
 //					$order->add_order_note( __( 'Menunggu pembayaran melalui espay via '.$productName.' dengan id transaksi '.$_REQUEST['trx_id'], 'woocommerce' ) );
-//            	https://secure.sgo.co.id/public/signature/js //production
-//	            http://secure-dev.sgo.co.id/public/signature/js //development
+//            	https://kit.espay.id/public/signature/js //production
+//	            http://sandbox-kit.espay.id/public/signature/js //development
                 $urlserver = $this->environment == 'production' ? 'https://kit.espay.id/public/signature/js' : 'https://sandbox-kit.espay.id/public/signature/js';
                 ?>
                 <script type="text/javascript" src="<?= $urlserver ?>"></script>
