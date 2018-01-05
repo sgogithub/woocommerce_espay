@@ -790,7 +790,7 @@ function woocommerce_espay_init() {
                 WC()->cart->empty_cart();
 //					$order->add_order_note( __( 'Menunggu pembayaran melalui espay via '.$productName.' dengan id transaksi '.$_REQUEST['trx_id'], 'woocommerce' ) );
 //            	https://kit.espay.id/public/signature/js //production
-//	            http://sandbox-kit.espay.id/public/signature/js //development
+//	            https://sandbox-kit.espay.id/public/signature/js //development
                 $urlserver = $this->environment == 'production' ? 'https://kit.espay.id/public/signature/js' : 'https://sandbox-kit.espay.id/public/signature/js';
                 ?>
                 <script type="text/javascript" src="<?= $urlserver ?>"></script>
